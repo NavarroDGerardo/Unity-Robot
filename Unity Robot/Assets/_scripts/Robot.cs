@@ -7,12 +7,28 @@ public class Robot : MonoBehaviour
     public GameObject right_feet;
     public GameObject left_feet;
     public GameObject right_calve;
+    public GameObject left_calve;
     float side = 10.0f;
 
     Vector3[] vertices;
     Mesh rightFeetMesh;
     Mesh leftFeetMesh;
     Mesh rightCalve;
+    Mesh leftCalve;
+
+    Vector3[] scaleVerticesZ(Vector3[] input, float scale)
+    {
+        Vector3[] output = new Vector3[input.Length];
+
+        for (int i = 0; i < input.Length; i++)
+        {
+            Vector4 temp1 = input[i];
+            temp1.w = 1;
+            output[i] = Transformations.Scale(temp1, 1f, 1f, scale);
+        }
+
+        return output;
+    }
 
     Vector3[] scaleVerticesY(Vector3[] input, float scale)
     {
@@ -23,7 +39,6 @@ public class Robot : MonoBehaviour
             Vector4 temp1 = input[i];
             temp1.w = 1;
             output[i] = Transformations.Scale(temp1, 1f, scale, 1f);
-            //Debug.Log(output[i].ToString("F5"));
         }
 
         return output;
@@ -57,6 +72,20 @@ public class Robot : MonoBehaviour
         return output;
     }
 
+    Vector3[] translateVerticesZ(Vector3[] input, float translation)
+    {
+        Vector3[] output = new Vector3[input.Length];
+
+        for (int i = 0; i < input.Length; i++)
+        {
+            Vector4 temp1 = input[i];
+            temp1.w = 1;
+            output[i] = Transformations.Translate(temp1, 0, 0, translation);
+        }
+
+        return output;
+    }
+
 
     // Start is called before the first frame update
     void Start()
@@ -64,6 +93,7 @@ public class Robot : MonoBehaviour
         rightFeetMesh = new Mesh();
         leftFeetMesh = new Mesh();
         rightCalve = new Mesh();
+        leftCalve = new Mesh();
 
         float hSide = side / 2.0f;
 
@@ -83,20 +113,31 @@ public class Robot : MonoBehaviour
         //rigthFoot transformatiosn
         Vector3[] rightFootVertices = scaleVerticesY(vertices, 0.5f);
         rightFootVertices = translateVerticesY(rightFootVertices, side/4);
-        rightFootVertices = translateVerticesX(rightFootVertices, side);
+        rightFootVertices = translateVerticesX(rightFootVertices, -side);
         rightFeetMesh.vertices = rightFootVertices;
 
         //leftFoot construction
         Vector3[] leftFootVertices = scaleVerticesY(vertices, 0.5f);
         leftFootVertices = translateVerticesY(leftFootVertices, side/4);
-        leftFootVertices = translateVerticesX(leftFootVertices, -side);
+        leftFootVertices = translateVerticesX(leftFootVertices, side);
         leftFeetMesh.vertices = leftFootVertices;
 
 
-        //rightCalve construction x = 10 y = 10 z = 2.5 -> scale z = 0.5
-        rightCalve.vertices = vertices;
+        //rightCalve construction 
+        Vector3[] rightCalveVertices = scaleVerticesZ(vertices, 0.5f);
+        rightCalveVertices = translateVerticesX(rightCalveVertices, -side);
+        rightCalveVertices = translateVerticesY(rightCalveVertices, side);
+        rightCalveVertices = translateVerticesZ(rightCalveVertices, side/4);
+        rightCalve.vertices = rightCalveVertices;
 
-     
+        //leftCalve construction 
+        Vector3[] leftCalveVertices = scaleVerticesZ(vertices, 0.5f);
+        leftCalveVertices = translateVerticesX(leftCalveVertices, side);
+        leftCalveVertices = translateVerticesY(leftCalveVertices, side);
+        leftCalveVertices = translateVerticesZ(leftCalveVertices, side / 4);
+        leftCalve.vertices = leftCalveVertices;
+
+
         // Topology:
         int[] tris = new int[]
         {
@@ -116,6 +157,7 @@ public class Robot : MonoBehaviour
         rightFeetMesh.triangles = tris;
         leftFeetMesh.triangles = tris;
         rightCalve.triangles = tris;
+        leftCalve.triangles = tris;
 
         // Normals:
         Vector3[] normals = new Vector3[]
@@ -135,6 +177,8 @@ public class Robot : MonoBehaviour
         leftFeetMesh.RecalculateNormals();
         rightCalve.normals = normals;
         rightCalve.RecalculateNormals();
+        leftCalve.normals = normals;
+        leftCalve.RecalculateNormals();
 
         // right foot:
         MeshRenderer meshRenderer1 = right_feet.AddComponent<MeshRenderer>();
@@ -153,6 +197,12 @@ public class Robot : MonoBehaviour
         meshRenderer3.sharedMaterial = new Material(Shader.Find("Standard"));
         MeshFilter meshFilter3 = right_calve.AddComponent<MeshFilter>();
         meshFilter3.mesh = rightCalve;
+
+        //left calve
+        MeshRenderer meshRenderer4 = left_calve.AddComponent<MeshRenderer>();
+        meshRenderer4.sharedMaterial = new Material(Shader.Find("Standard"));
+        MeshFilter meshFilter4 = left_calve.AddComponent<MeshFilter>();
+        meshFilter4.mesh = leftCalve;
     }
 
     // Update is called once per frame
