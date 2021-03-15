@@ -4,7 +4,13 @@ using UnityEngine;
 
 public class Robot : MonoBehaviour
 {
-    float side = 10.0f;
+    public float side = 10.0f;
+
+    float rotationX = 0.0f;
+    float dir = 1.0f;    // dir can only be 1 or -1
+    float delta = 0.3f;  // how much to change rotation on each frame
+    float minAngle = -45.0f;  // minimum rotation angle in X
+    float maxAngle = 45.0f;   // maximum rotation angle in X
 
     public GameObject right_feet;
     public GameObject left_feet;
@@ -26,23 +32,23 @@ public class Robot : MonoBehaviour
 
     Vector3[] vertices;
 
-    Mesh rightFeetMesh;
-    Mesh leftFeetMesh;
-    Mesh rightCalve;
-    Mesh leftCalve;
-    Mesh rightThighMesh;
-    Mesh leftThighMesh;
-    Mesh hipMesh;
-    Mesh bodyMesh;
-    Mesh headMesh;
-    Mesh rightShoulderMesh;
-    Mesh rightBicepMesh;
-    Mesh rightForearmMesh;
-    Mesh rightHandMesh;
-    Mesh leftShoulderMesh;
-    Mesh leftBicepMesh;
-    Mesh leftForearmMesh;
-    Mesh leftHandMesh;
+    public Mesh rightFeetMesh;
+    public Mesh leftFeetMesh;
+    public Mesh rightCalve;
+    public Mesh leftCalve;
+    public Mesh rightThighMesh;
+    public Mesh leftThighMesh;
+    public Mesh hipMesh;
+    public Mesh bodyMesh;
+    public Mesh headMesh;
+    public Mesh rightShoulderMesh;
+    public Mesh rightBicepMesh;
+    public Mesh rightForearmMesh;
+    public Mesh rightHandMesh;
+    public Mesh leftShoulderMesh;
+    public Mesh leftBicepMesh;
+    public Mesh leftForearmMesh;
+    public Mesh leftHandMesh;
 
     // Start is called before the first frame update
     void Start()
@@ -108,11 +114,12 @@ public class Robot : MonoBehaviour
         leftCalve.vertices = leftCalveVertices;
 
         //rightThighMesh construction
-        Vector3[] rightThighVertices = Construction.scaleVerticesZ(vertices, 0.5f);
+        /*Vector3[] rightThighVertices = Construction.scaleVerticesZ(vertices, 0.5f);
         rightThighVertices = Construction.translateVerticesX(rightThighVertices, -side);
         rightThighVertices = Construction.translateVerticesY(rightThighVertices, side*2);
-        rightThighVertices = Construction.translateVerticesZ(rightThighVertices, side / 4);
-        rightThighMesh.vertices = rightThighVertices;
+        rightThighVertices = Construction.translateVerticesZ(rightThighVertices, side / 4);*/
+        rightThighMesh.vertices = vertices;
+
 
         //leftThighMesh construction
         Vector3[] leftThighVertices = Construction.scaleVerticesZ(vertices, 0.5f);
@@ -392,6 +399,17 @@ public class Robot : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        rotationX += dir * delta;
+        if (rotationX > maxAngle || rotationX < minAngle) dir = -dir;
 
+        rightThighMesh.vertices = Walker.DoTransformThighRight(vertices, rotationX, side);
+        leftThighMesh.vertices = Walker.DoTransformThighLeft(vertices, -rotationX, side);
+        rightCalve.vertices = Walker.DoTransformCalveRightFront(vertices, rotationX, side);
+
+        //CALVE ENFRENTE
+        if (dir < 0)
+        {
+            
+        }
     }
 }
