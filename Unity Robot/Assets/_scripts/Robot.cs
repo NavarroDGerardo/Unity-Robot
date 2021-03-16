@@ -152,12 +152,15 @@ public class Robot : MonoBehaviour
         bodyMesh.vertices = bodyVertices;
 
         //headMesh construction Y = 60 z = 2.5
-        Vector3[] headVertices = Construction.translateVerticesY(vertices, side * 6.5f);
+        Vector3[] headVertices = Construction.translateVerticesY(vertices, side * 6.4f);
         headVertices = Construction.translateVerticesZ(headVertices, side / 4);
         headMesh.vertices = headVertices;
 
         //neckMesh construction
-        Vector3[] neckVertices = Construction.translateVerticesY(vertices, side * 6);
+        Vector3[] neckVertices = Construction.scaleVerticesX(vertices, 0.6f);
+        neckVertices = Construction.scaleVerticesY(neckVertices, 0.4f);
+        neckVertices = Construction.scaleVerticesZ(neckVertices, 0.6f);
+        neckVertices = Construction.translateVerticesY(neckVertices, side * 5.7f);
         neckVertices = Construction.translateVerticesZ(neckVertices, side / 4);
         neckMesh.vertices = neckVertices;
 
@@ -189,18 +192,18 @@ public class Robot : MonoBehaviour
         Vector3[] rightHandVertices = Construction.scaleVerticesX(vertices, 0.5f);
         rightHandVertices = Construction.scaleVerticesY(rightHandVertices, 0.5f);
         rightHandVertices = Construction.scaleVerticesZ(rightHandVertices, 0.5f);
+        rightHandVertices = Construction.translateVerticesX(rightHandVertices, side * 2f);
         rightHandVertices = Construction.translateVerticesY(rightHandVertices, side * 2.5f);
         rightHandVertices = Construction.translateVerticesZ(rightHandVertices, side / 4);
-        rightHandVertices = Construction.translateVerticesX(rightHandVertices, side * 2f);
         rightHandMesh.vertices = rightHandVertices;
 
-        //rightShoulderMesh construction
+        //left ShoulderMesh construction
         Vector3[] leftShoulderVertices = Construction.translateVerticesX(vertices, - side * 2);
         leftShoulderVertices = Construction.translateVerticesY(leftShoulderVertices, side * 5);
         leftShoulderVertices = Construction.translateVerticesZ(leftShoulderVertices, side / 4);
         leftShoulderMesh.vertices = leftShoulderVertices;
 
-        //rightBicepMesh construction
+        //left BicepMesh construction
         Vector3[] leftBicepVertices = Construction.scaleVerticesY(vertices, 1.5f);
         leftBicepVertices = Construction.scaleVerticesZ(leftBicepVertices, 0.5f);
         leftBicepVertices = Construction.scaleVerticesX(leftBicepVertices, 0.5f);
@@ -209,7 +212,7 @@ public class Robot : MonoBehaviour
         leftBicepVertices = Construction.translateVerticesZ(leftBicepVertices, side / 6);
         leftBicepMesh.vertices = leftBicepVertices;
 
-        //rightForearmMesh construction
+        //left ForearmMesh construction
         Vector3[] leftForearmVertices = Construction.scaleVerticesY(vertices, 0.75f);
         leftForearmVertices = Construction.scaleVerticesZ(leftForearmVertices, 0.75f);
         leftForearmVertices = Construction.scaleVerticesX(leftForearmVertices, 0.65f);
@@ -218,11 +221,11 @@ public class Robot : MonoBehaviour
         leftForearmVertices = Construction.translateVerticesZ(leftForearmVertices, side / 4);
         leftForearmMesh.vertices = leftForearmVertices;
 
-        //rightHandMesh construction
+        //left HandMesh construction
         Vector3[] leftHandVertices = Construction.scaleVerticesX(vertices, 0.5f);
         leftHandVertices = Construction.scaleVerticesY(leftHandVertices, 0.5f);
         leftHandVertices = Construction.scaleVerticesZ(leftHandVertices, 0.5f);
-        leftHandVertices = Construction.translateVerticesX(leftHandVertices, - side*2f);
+        leftHandVertices = Construction.translateVerticesX(leftHandVertices, -side*2f);
         leftHandVertices = Construction.translateVerticesY(leftHandVertices, side * 2.5f);
         leftHandVertices = Construction.translateVerticesZ(leftHandVertices, side / 4);
         leftHandMesh.vertices = leftHandVertices;
@@ -433,10 +436,14 @@ public class Robot : MonoBehaviour
         rightThighMesh.vertices = Walker.DoTransformThighRight(vertices, rotationX, side);
         leftThighMesh.vertices = Walker.DoTransformThighLeft(vertices, -rotationX, side);
 
-        rightBicepMesh.vertices = Walker.DoTransformBicepLeft(vertices, -rotationArm, side);
+        rightBicepMesh.vertices = Walker.DoTransformBicepLeft(vertices, rotationArm, side);
         leftBicepMesh.vertices = Walker.DoTransformBicepRight(vertices, rotationArm, side);
 
         leftForearmMesh.vertices = Walker.DoTransformForearmLeft(vertices, -rotationX/3f, side);
+        rightForearmMesh.vertices = Walker.DoTransformForearmRight(vertices, -rotationX/3f, side);
+
+        leftHandMesh.vertices = Walker.DoTransformHandLeft(vertices, -rotationX/3f, side);
+        rightHandMesh.vertices = Walker.DoTransformHandRight(vertices, -rotationX/3f, side);
 
         rotationTorax = rotationX / 6f;
         bodyMesh.vertices = Walker.DoTransformTorax(vertices, rotationTorax, side);
