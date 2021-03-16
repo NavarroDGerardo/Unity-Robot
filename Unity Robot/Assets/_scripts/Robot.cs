@@ -404,12 +404,15 @@ public class Robot : MonoBehaviour
 
         rightThighMesh.vertices = Walker.DoTransformThighRight(vertices, rotationX, side);
         leftThighMesh.vertices = Walker.DoTransformThighLeft(vertices, -rotationX, side);
-        rightCalve.vertices = Walker.DoTransformCalveRightFront(vertices, rotationX, side);
 
         //CALVE ENFRENTE
         if (dir < 0)
         {
-            
+            rightCalve.vertices = Walker.DoTransformCalveRightFront(vertices, rotationX, side);
+        }
+        else
+        {
+            rightCalve.vertices = Walker.DoTransformCalveRightFront(vertices, rotationX, side);
         }
     }
 }
