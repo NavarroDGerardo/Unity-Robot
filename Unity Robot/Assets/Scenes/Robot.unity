@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -293,6 +293,36 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1732238642}
   m_RootOrder: 12
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &395962612
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 395962613}
+  m_Layer: 0
+  m_Name: neck
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &395962613
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 395962612}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1732238642}
+  m_RootOrder: 17
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &737348973
 GameObject:
@@ -563,6 +593,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3535c66adc56dbb43b6c7c6aba90d388, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  side: 10
   right_feet: {fileID: 1326293629}
   left_feet: {fileID: 1630060256}
   right_calve: {fileID: 1713505682}
@@ -572,6 +603,7 @@ MonoBehaviour:
   hip: {fileID: 2112091772}
   body: {fileID: 845299860}
   head: {fileID: 279012870}
+  neck: {fileID: 395962612}
   right_shoulder: {fileID: 325471573}
   right_bicep: {fileID: 1167126339}
   right_forearm: {fileID: 1888610212}
@@ -580,6 +612,24 @@ MonoBehaviour:
   left_bicep: {fileID: 1072486577}
   left_forearm: {fileID: 2018105127}
   left_hand: {fileID: 1826173647}
+  rightFeetMesh: {fileID: 0}
+  leftFeetMesh: {fileID: 0}
+  rightCalve: {fileID: 0}
+  leftCalve: {fileID: 0}
+  rightThighMesh: {fileID: 0}
+  leftThighMesh: {fileID: 0}
+  hipMesh: {fileID: 0}
+  bodyMesh: {fileID: 0}
+  headMesh: {fileID: 0}
+  neckMesh: {fileID: 0}
+  rightShoulderMesh: {fileID: 0}
+  rightBicepMesh: {fileID: 0}
+  rightForearmMesh: {fileID: 0}
+  rightHandMesh: {fileID: 0}
+  leftShoulderMesh: {fileID: 0}
+  leftBicepMesh: {fileID: 0}
+  leftForearmMesh: {fileID: 0}
+  leftHandMesh: {fileID: 0}
 --- !u!4 &1732238642
 Transform:
   m_ObjectHideFlags: 0
@@ -608,6 +658,7 @@ Transform:
   - {fileID: 1072486578}
   - {fileID: 2018105128}
   - {fileID: 1826173648}
+  - {fileID: 395962613}
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
