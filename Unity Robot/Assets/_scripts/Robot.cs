@@ -1,4 +1,10 @@
-﻿using System.Collections;
+﻿//Edgar Lopez
+//Diego Gerardo Navarro
+//Alan Mendoza
+//Emiliano Roldan
+
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -23,6 +29,7 @@ public class Robot : MonoBehaviour
     public GameObject hip;
     public GameObject body;
     public GameObject head;
+    public GameObject neck;
     public GameObject right_shoulder;
     public GameObject right_bicep;
     public GameObject right_forearm;
@@ -43,6 +50,7 @@ public class Robot : MonoBehaviour
     public Mesh hipMesh;
     public Mesh bodyMesh;
     public Mesh headMesh;
+    public Mesh neckMesh;
     public Mesh rightShoulderMesh;
     public Mesh rightBicepMesh;
     public Mesh rightForearmMesh;
@@ -64,6 +72,7 @@ public class Robot : MonoBehaviour
         hipMesh = new Mesh();
         bodyMesh = new Mesh();
         headMesh = new Mesh();
+        neckMesh = new Mesh();
         rightShoulderMesh = new Mesh();
         rightBicepMesh = new Mesh();
         rightForearmMesh = new Mesh();
@@ -143,9 +152,14 @@ public class Robot : MonoBehaviour
         bodyMesh.vertices = bodyVertices;
 
         //headMesh construction Y = 60 z = 2.5
-        Vector3[] headVertices = Construction.translateVerticesY(vertices, side * 6);
+        Vector3[] headVertices = Construction.translateVerticesY(vertices, side * 6.5f);
         headVertices = Construction.translateVerticesZ(headVertices, side / 4);
         headMesh.vertices = headVertices;
+
+        //neckMesh construction
+        Vector3[] neckVertices = Construction.translateVerticesY(vertices, side * 6);
+        neckVertices = Construction.translateVerticesZ(neckVertices, side / 4);
+        neckMesh.vertices = neckVertices;
 
         //rightShoulderMesh construction
         Vector3[] rightShoulderVertices = Construction.translateVerticesX(vertices, side * 2);
@@ -238,6 +252,7 @@ public class Robot : MonoBehaviour
         hipMesh.triangles = tris;
         bodyMesh.triangles = tris;
         headMesh.triangles = tris;
+        neckMesh.triangles = tris;
         rightShoulderMesh.triangles = tris;
         rightBicepMesh.triangles = tris;
         rightForearmMesh.triangles = tris;
@@ -278,6 +293,8 @@ public class Robot : MonoBehaviour
         bodyMesh.RecalculateNormals();
         headMesh.normals = normals;
         headMesh.RecalculateNormals();
+        neckMesh.normals = normals;
+        neckMesh.RecalculateNormals();
         rightShoulderMesh.normals = normals;
         rightShoulderMesh.RecalculateNormals();
         rightBicepMesh.normals = normals;
@@ -396,6 +413,12 @@ public class Robot : MonoBehaviour
         meshRenderer17.sharedMaterial = new Material(Shader.Find("Standard"));
         MeshFilter meshFilter17 = left_hand.AddComponent<MeshFilter>();
         meshFilter17.mesh = leftHandMesh;
+
+        //neckMesh Construction
+        MeshRenderer meshRenderer18 = neck.AddComponent<MeshRenderer>();
+        meshRenderer18.sharedMaterial = new Material(Shader.Find("Standard"));
+        MeshFilter meshFilter18 = neck.AddComponent<MeshFilter>();
+        meshFilter18.mesh = neckMesh;
     }
 
     // Update is called once per frame
@@ -412,6 +435,8 @@ public class Robot : MonoBehaviour
 
         rightBicepMesh.vertices = Walker.DoTransformBicepLeft(vertices, -rotationArm, side);
         leftBicepMesh.vertices = Walker.DoTransformBicepRight(vertices, rotationArm, side);
+
+        leftForearmMesh.vertices = Walker.DoTransformForearmLeft(vertices, -rotationX/3f, side);
 
         rotationTorax = rotationX / 6f;
         bodyMesh.vertices = Walker.DoTransformTorax(vertices, rotationTorax, side);

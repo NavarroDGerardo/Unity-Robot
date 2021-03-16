@@ -5,6 +5,26 @@ using UnityEngine;
 public class Walker
 {
 
+    public static Vector3[] DoTransformForearmLeft(Vector3[] input, float rotX, float side) {
+       Vector3[] output = new Vector3[input.Length];
+
+        for (int i = 0; i < input.Length; i++)
+        {
+            
+            
+            //Vector4 temp4 = Transformations.Translate(temp3, 0, side * 2.5f, side / 4);
+            Vector4 temp1 = Transformations.Scale(input[i], 0.65f, 0.75f, 0.75f);
+            temp1.w = 1;
+            //Vector4 temp2 = Transformations.Translate(temp1, -side, -side * 1.5f, 0f);
+            Vector4 temp2 = Transformations.RotateX(temp1, -rotX);
+            //Vector4 temp4 = Transformations.Translate(temp3, 0, side * 2.5f, side / 4);
+            Vector4 temp3 = Transformations.Translate(temp2, -side*2, side*3, side/4);
+            output[i] = temp3;
+        }
+
+        return output; 
+    }
+
     public static Vector3[] DoTransformBicepLeft(Vector3[] input, float rotX, float side)
     {
         Vector3[] output = new Vector3[input.Length];
