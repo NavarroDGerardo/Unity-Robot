@@ -7,6 +7,7 @@ public class Robot : MonoBehaviour
     public float side = 10.0f;
 
     float rotationX = 0.0f;
+    float rotationY = 0.0f;
     float dir = 1.0f;    // dir can only be 1 or -1
     float delta = 0.3f;  // how much to change rotation on each frame
     float minAngle = -45.0f;  // minimum rotation angle in X
@@ -20,6 +21,7 @@ public class Robot : MonoBehaviour
     public GameObject left_thigh;
     public GameObject hip;
     public GameObject body;
+    public GameObject neck;
     public GameObject head;
     public GameObject right_shoulder;
     public GameObject right_bicep;
@@ -40,6 +42,7 @@ public class Robot : MonoBehaviour
     public Mesh leftThighMesh;
     public Mesh hipMesh;
     public Mesh bodyMesh;
+    public Mesh neckMesh;
     public Mesh headMesh;
     public Mesh rightShoulderMesh;
     public Mesh rightBicepMesh;
@@ -61,6 +64,7 @@ public class Robot : MonoBehaviour
         leftThighMesh = new Mesh();
         hipMesh = new Mesh();
         bodyMesh = new Mesh();
+        neckMesh = new Mesh();
         headMesh = new Mesh();
         rightShoulderMesh = new Mesh();
         rightBicepMesh = new Mesh();
@@ -142,10 +146,19 @@ public class Robot : MonoBehaviour
         bodyVertices = Construction.translateVerticesZ(bodyVertices, side / 4);
         bodyMesh.vertices = bodyVertices;
 
+        //neckMesh construction Y = 60 z = 2.5
+        Vector3[] neckVertices = Construction.scaleVerticesX(vertices, 0.6f);
+        neckVertices = Construction.scaleVerticesY(neckVertices, 0.4f);
+        neckVertices = Construction.scaleVerticesZ(neckVertices, 0.6f);
+        neckVertices = Construction.translateVerticesY(neckVertices, side * 5.7f);
+        neckVertices = Construction.translateVerticesZ(neckVertices, side / 4);
+        neckMesh.vertices = neckVertices;
+
         //headMesh construction Y = 60 z = 2.5
-        Vector3[] headVertices = Construction.translateVerticesY(vertices, side * 6);
-        headVertices = Construction.translateVerticesZ(headVertices, side / 4);
-        headMesh.vertices = headVertices;
+      /*Vector3[] headVertices = Construction.translateVerticesY(vertices, side * 6.4f);
+      headVertices = Construction.translateVerticesZ(headVertices, side / 4);
+        headVertices = Construction.DoTransformsHead(headVertices, rotationY);*/
+        headMesh.vertices = vertices;
 
         //rightShoulderMesh construction
         Vector3[] rightShoulderVertices = Construction.translateVerticesX(vertices, side * 2);
@@ -234,6 +247,7 @@ public class Robot : MonoBehaviour
         leftThighMesh.triangles = tris;
         hipMesh.triangles = tris;
         bodyMesh.triangles = tris;
+        neckMesh.triangles = tris;
         headMesh.triangles = tris;
         rightShoulderMesh.triangles = tris;
         rightBicepMesh.triangles = tris;
@@ -273,6 +287,8 @@ public class Robot : MonoBehaviour
         hipMesh.RecalculateNormals();
         bodyMesh.normals = normals;
         bodyMesh.RecalculateNormals();
+        neckMesh.normals = normals;
+        neckMesh.RecalculateNormals();
         headMesh.normals = normals;
         headMesh.RecalculateNormals();
         rightShoulderMesh.normals = normals;
@@ -394,16 +410,28 @@ public class Robot : MonoBehaviour
         meshRenderer17.sharedMaterial = new Material(Shader.Find("Standard"));
         MeshFilter meshFilter17 = left_hand.AddComponent<MeshFilter>();
         meshFilter17.mesh = leftHandMesh;
+
+        //neckMesh Construciton 
+        MeshRenderer meshRenderer18 = neck.AddComponent<MeshRenderer>();
+        meshRenderer18.sharedMaterial = new Material(Shader.Find("Standard"));
+        MeshFilter meshFilter18 = neck.AddComponent<MeshFilter>();
+        meshFilter18.mesh = neckMesh;
     }
 
     // Update is called once per frame
     void Update()
     {
+        rotationY += dir * delta;
+        if (rotationY > maxAngle || rotationY < minAngle) dir = -dir;
+
+        headMesh.vertices = Walker.DoTransformsHead(vertices, rotationY, side);
+
         rotationX += dir * delta;
         if (rotationX > maxAngle || rotationX < minAngle) dir = -dir;
 
         rightThighMesh.vertices = Walker.DoTransformThighRight(vertices, rotationX, side);
         leftThighMesh.vertices = Walker.DoTransformThighLeft(vertices, -rotationX, side);
+
 
         //CALVE ENFRENTE
         if (dir < 0)
