@@ -412,7 +412,7 @@ public class Robot : MonoBehaviour
         }
         else
         {
-            rightCalve.vertices = Walker.DoTransformCalveRightFront(vertices, rotationX, side);
+            rightCalve.vertices = Walker.DoTransformCalveRightBack(vertices, rotationX, side);
         }
     }
 }
