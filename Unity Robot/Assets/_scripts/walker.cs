@@ -56,4 +56,21 @@ public class Walker
 
         return output;
     }
+
+    
+
+    public static Vector3[] DoTransformsHead(Vector3[] input, float rotY, float side)
+    {
+        Vector3[] output = new Vector3[input.Length];
+
+        for (int i = 0; i < input.Length; i++)
+        {
+            Vector4 temp1 = input[i];
+            temp1.w = 1;
+            Vector4 temp2 = Transformations.Translate(temp1, side, side * 6.4f, side);
+            Vector4 temp3 = Transformations.Translate(temp1, -side, -side, side / 4);
+            output[i] = Transformations.RotateY(temp1, rotY * 1.5f);
+        }
+        return output;
+    }
 }
