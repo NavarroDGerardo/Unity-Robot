@@ -15,7 +15,7 @@ public class Robot : MonoBehaviour
     float rotationArm = 0.0f;
     float rotationTorax = 0.0f;
     float dir = 1.0f;    // dir can only be 1 or -1
-    float delta = 0.2f;  // how much to change rotation on each frame
+    float delta = 1.3f;  // how much to change rotation on each frame
     float minAngle = -45.0f;  // minimum rotation angle in X
     float maxAngle = 45.0f;   // maximum rotation angle in X
 
@@ -64,6 +64,7 @@ public class Robot : MonoBehaviour
     Mesh leftBicepMesh;
     Mesh leftForearmMesh;
     Mesh leftHandMesh;
+
 
     // Start is called before the first frame update
     void Start()
@@ -163,6 +164,7 @@ public class Robot : MonoBehaviour
         leftThighMesh.vertices = leftThighVertices;
 
         //hipMesh construction Y = 30, Z = 2.5 -> scale x = 3
+        //HIPS:
         Vector3[] hipVertices = Construction.scaleVerticesX(vertices, 3f);
         hipVertices = Construction.translateVerticesY(hipVertices, side * 3);
         hipVertices = Construction.translateVerticesZ(hipVertices, side / 4);

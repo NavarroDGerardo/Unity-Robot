@@ -6,16 +6,20 @@ public class R : MonoBehaviour
 {
     // Start is called before the first frame update
     List<GameObject> bones;
-    
-    /*
-    
-       
-        
-        
-        
-        
 
-    */
+    public static float side = 10.0f;
+    float dir = 0.0f;  
+    float rotationX = 1.0f;
+    float delta = 0.2f;  // how much to change rotation on each frame
+    float minAngle = -45.0f;  // minimum rotation angle in X
+    float maxAngle = 45.0f;   // maximum rotation angle in X
+
+    float rotationKnee = -40.0f;
+    float dirKnee = 1.0f;
+
+    float rotationKneeLeft = 0f;
+    float dirKneeLeft = 1.0f;
+
     public enum BONES
     {
         HIPS,
@@ -57,6 +61,29 @@ public class R : MonoBehaviour
         }
         b.myMesh.vertices = newVerts;
     }
+
+
+    public static void ApplyTransformationsROTATION(Matrix4x4 t, GameObject target, float rotX)
+    {
+        
+        Block b = target.GetComponent<Block>();
+        Vector3[] newVerts = new Vector3[8];
+        for (int v = 0; v < b.vertices.Length; v++)
+        {
+            Vector4 temp = b.vertices[v];
+            temp.w = 1;
+
+            //Vector4 temp2 = Transformations.Translate(temp1, -side, -side * 1.5f, 0f);
+            Vector4 temp2 = Transformations.RotateX(temp, -rotX);
+            //Vector4 temp4 = Transformations.Translate(temp3, 0, side * 2.5f, side / 4);
+            Vector4 temp3 = Transformations.Translate(temp2, -side*2, side*2.5f, side/4);
+            newVerts[v] = t * temp;
+        
+        }
+        b.myMesh.vertices = newVerts;
+    }
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -77,6 +104,9 @@ public class R : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        rotationX += dir * delta;
+        if (rotationX > maxAngle || rotationX < minAngle) dir = -dir;
+
         //HIPS:
         Matrix4x4 hipsS = TransformationSergio.ScaleM(1, 0.3f, 0.6f);
         Matrix4x4 hipsM = hipsS;
@@ -88,7 +118,8 @@ public class R : MonoBehaviour
         Matrix4x4 torsoS = TransformationSergio.ScaleM(1.0f, 1.0f, 0.5f);
         Matrix4x4 torsoI = hipsI * torsoT;
         Matrix4x4 torsoM = torsoI * torsoS;
-        ApplyTransformations(torsoM, bones[(int)BONES.TORSO]);
+        //ApplyTransformations(torsoM, bones[(int)BONES.TORSO]);
+        ApplyTransformationsROTATION(torsoM, bones[(int)BONES.TORSO], rotationX);
 
         //RIGHSHOULDER
         Matrix4x4 shoulderTR = TransformationSergio.TranslateM(-0.65f, 0.30f, 0);
@@ -204,5 +235,39 @@ public class R : MonoBehaviour
         Matrix4x4 headS = TransformationSergio.ScaleM(0.5f, 0.5f, 0.5f);
         Matrix4x4 headM = neckI * headT * headS;
         ApplyTransformations(headM, bones[(int)BONES.HEAD]);
+
+        /*
+        if (dir < 0)
+        {
+            calveMR.vertices = Walker.DoTransformCalveRightFront(vertices, rotationX, side);
+            rightFeetMesh.vertices = Walker.DoTransformFootRightFront(vertices, rotationX, side);
+
+            if (rotationX > -25.0f)
+            {
+                rotationKneeLeft += dirKneeLeft * delta * -2;
+            }
+            if (rotationX < 25.0f)
+            {
+                rotationKneeLeft += dirKneeLeft * delta * 2;
+            }
+            leftCalve.vertices = Walker.DoTransformCalveLeftBack(vertices, -rotationX, side, rotationKneeLeft);
+            leftFeetMesh.vertices = Walker.DoTransformFootLeftBack(vertices, -rotationX, side, rotationKneeLeft);
+        }
+        else
+        {
+            leftCalve.vertices = Walker.DoTransformCalveLeftFront(vertices, -rotationX, side);
+            leftFeetMesh.vertices = Walker.DoTransformFootLeftFront(vertices, -rotationX, side);
+
+            if (rotationX < -25.0f)
+            {
+                rotationKnee += dirKnee * delta * -2;
+            }
+            if (rotationX > 25.0f)
+            {
+                rotationKnee += dirKnee * delta * 2;
+            }
+            rightCalve.vertices = Walker.DoTransformCalveRightBack(vertices, rotationX, side, rotationKnee);
+            rightFeetMesh.vertices = Walker.DoTransformFootRightBack(vertices, rotationX, side, rotationKnee);
+        }*/
     }
 }

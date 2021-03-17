@@ -13,12 +13,13 @@ public class Walker
             
             
             //Vector4 temp4 = Transformations.Translate(temp3, 0, side * 2.5f, side / 4);
-            Vector4 temp1 = Transformations.Scale(input[i], 0.5f, 0.5f, 0.5f);
+            Vector4 temp1 = Transformations.Scale(input[i], 0.6f, 0.6f, 0.6f);
             temp1.w = 1;
             //Vector4 temp2 = Transformations.Translate(temp1, -side, -side * 1.5f, 0f);
-            Vector4 temp2 = Transformations.RotateX(temp1, -rotX);
+            Vector4 temp2 = Transformations.RotateX(temp1, -rotX*1.0f);
+            Vector4 temp4 = Transformations.RotateY(temp2, rotX/5);
             //Vector4 temp4 = Transformations.Translate(temp3, 0, side * 2.5f, side / 4);
-            Vector4 temp3 = Transformations.Translate(temp2, -side*2, side*2.5f, side/4);
+            Vector4 temp3 = Transformations.Translate(temp4, -side*2, side*2.5f, side/4);
             output[i] = temp3;
         }
 
@@ -33,12 +34,13 @@ public class Walker
             
             
             //Vector4 temp4 = Transformations.Translate(temp3, 0, side * 2.5f, side / 4);
-            Vector4 temp1 = Transformations.Scale(input[i], 0.5f, 0.5f, 0.5f);
+            Vector4 temp1 = Transformations.Scale(input[i], 0.6f, 0.6f, 0.6f);
             temp1.w = 1;
             //Vector4 temp2 = Transformations.Translate(temp1, -side, -side * 1.5f, 0f);
-            Vector4 temp2 = Transformations.RotateX(temp1, -rotX);
+            Vector4 temp2 = Transformations.RotateX(temp1, -rotX*1.0f);
+            Vector4 temp4 = Transformations.RotateY(temp2, rotX/5);
             //Vector4 temp4 = Transformations.Translate(temp3, 0, side * 2.5f, side / 4);
-            Vector4 temp3 = Transformations.Translate(temp2, side*2, side*2.5f, side/4);
+            Vector4 temp3 = Transformations.Translate(temp4, side*2, side*2.5f, side/4);
             output[i] = temp3;
         }
 
@@ -56,9 +58,10 @@ public class Walker
             Vector4 temp1 = Transformations.Scale(input[i], 0.65f, 0.75f, 0.75f);
             temp1.w = 1;
             //Vector4 temp2 = Transformations.Translate(temp1, -side, -side * 1.5f, 0f);
-            Vector4 temp2 = Transformations.RotateX(temp1, -rotX);
+            Vector4 temp2 = Transformations.RotateX(temp1, -rotX*0.5f);
+            Vector4 temp4 = Transformations.RotateY(temp2, rotX/8);
             //Vector4 temp4 = Transformations.Translate(temp3, 0, side * 2.5f, side / 4);
-            Vector4 temp3 = Transformations.Translate(temp2, -side*2, side*3, side/4);
+            Vector4 temp3 = Transformations.Translate(temp4, -side*2, side*3, side/4);
             output[i] = temp3;
         }
 
@@ -73,12 +76,13 @@ public class Walker
             
             
             //Vector4 temp4 = Transformations.Translate(temp3, 0, side * 2.5f, side / 4);
-            Vector4 temp1 = Transformations.Scale(input[i], 0.65f, 0.75f, 0.75f);
+            Vector4 temp1 = Transformations.Scale(input[i], 0.75f, 0.85f, 0.85f);
             temp1.w = 1;
             //Vector4 temp2 = Transformations.Translate(temp1, -side, -side * 1.5f, 0f);
-            Vector4 temp2 = Transformations.RotateX(temp1, -rotX);
+            Vector4 temp2 = Transformations.RotateX(temp1, -rotX*0.5f);
+            Vector4 temp4 = Transformations.RotateY(temp2, rotX/8);
             //Vector4 temp4 = Transformations.Translate(temp3, 0, side * 2.5f, side / 4);
-            Vector4 temp3 = Transformations.Translate(temp2, side*2, side*3, side/4);
+            Vector4 temp3 = Transformations.Translate(temp4, side*2, side*3, side/4);
             output[i] = temp3;
         }
 
@@ -94,18 +98,20 @@ public class Walker
             
             
             //Vector4 temp4 = Transformations.Translate(temp3, 0, side * 2.5f, side / 4);
-            Vector4 temp1 = Transformations.Scale(input[i], 0.5f, 1.5f, 0.5f);
+            Vector4 temp1 = Transformations.Scale(input[i], 0.5f, 1.5f, 0.45f);
             temp1.w = 1;
             //Vector4 temp2 = Transformations.Translate(temp1, -side, -side * 1.5f, 0f);
-            Vector4 temp3 = Transformations.RotateX(temp1, rotX);
+            Vector4 temp3 = Transformations.RotateX(temp1, rotX/5);
+            Vector4 temp4 = Transformations.RotateY(temp3, rotX/5);
             //Vector4 temp4 = Transformations.Translate(temp3, 0, side * 2.5f, side / 4);
-            Vector4 temp5 = Transformations.Translate(temp3, side*2, side*4, side/6);
+            Vector4 temp5 = Transformations.Translate(temp4, side*2, side*4, side/6);
             output[i] = temp5;
         }
 
         return output;
     }
 
+    
     public static Vector3[] DoTransformBicepRight(Vector3[] input, float rotX, float side)
     {
         Vector3[] output = new Vector3[input.Length];
@@ -113,12 +119,13 @@ public class Walker
         for (int i = 0; i < input.Length; i++)
         {
             //Vector4 temp4 = Transformations.Translate(temp3, 0, side * 2.5f, side / 4);
-            Vector4 temp1 = Transformations.Scale(input[i], 0.5f, 1.5f, 0.5f);
+            Vector4 temp1 = Transformations.Scale(input[i], 0.5f, 1.5f, 0.45f);
             temp1.w = 1;
             //Vector4 temp2 = Transformations.Translate(temp1, -side, -side * 1.5f, 0f);
-            Vector4 temp3 = Transformations.RotateX(temp1, rotX);
+            Vector4 temp3 = Transformations.RotateX(temp1, rotX/5);
+            Vector4 temp4 = Transformations.RotateY(temp3, rotX/5);
             //Vector4 temp4 = Transformations.Translate(temp3, 0, side * 2.5f, side / 4);
-            Vector4 temp5 = Transformations.Translate(temp3, -side*2, side*4, side/4);
+            Vector4 temp5 = Transformations.Translate(temp4, -side*2, side*4, side/4);
             output[i] = temp5;
            
         }
@@ -136,7 +143,7 @@ public class Walker
             Vector4 temp1 = Transformations.Scale(input[i], 3f, 2f, 2f);
             temp1.w = 1;
             Vector4 temp2 = Transformations.Translate(temp1, 0.0f, side * 4 + side / 2, 0.0f);
-            Vector4 temp3 = Transformations.RotateY(temp2, rotY);
+            Vector4 temp3 = Transformations.RotateY(temp2, rotY*1.5f);
             output[i] = temp3;
             ;
         }
@@ -152,10 +159,10 @@ public class Walker
 
         for (int i = 0; i < input.Length; i++)
         {
-            Vector4 temp1 = Transformations.Scale(input[i], 1f, 1f, 1f);
+            Vector4 temp1 = Transformations.Scale(input[i], 1f, 1f, 1.4f);
             temp1.w = 1;
-            Vector4 temp2 = Transformations.Translate(temp1, side * 2, side * 5, side / 4);
-            Vector4 temp3 = Transformations.RotateY(temp2, rotY);
+            Vector4 temp2 = Transformations.Translate(temp1, side * 2, side * 5, side/10);
+            Vector4 temp3 = Transformations.RotateY(temp2, rotY*1.5f);
             output[i] = temp3;
             ;
         }
@@ -171,10 +178,10 @@ public class Walker
 
         for (int i = 0; i < input.Length; i++)
         {
-            Vector4 temp1 = Transformations.Scale(input[i], 1f, 1f, 1f);
+            Vector4 temp1 = Transformations.Scale(input[i], 1f, 1f, 1.4f);
             temp1.w = 1;
-            Vector4 temp2 = Transformations.Translate(temp1, -side * 2, side * 5, side / 4);
-            Vector4 temp3 = Transformations.RotateY(temp2, rotY);
+            Vector4 temp2 = Transformations.Translate(temp1, -side * 2, side * 5, side/10);
+            Vector4 temp3 = Transformations.RotateY(temp2, rotY*1.5f);
             output[i] = temp3;
             ;
         }
