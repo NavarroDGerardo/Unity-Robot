@@ -125,22 +125,6 @@ public class Walker
 
         return output;
     }
-    public static Vector3[] DoTransformThighRight(Vector3[] input, float rotX, float side)
-    {
-        Vector3[] output = new Vector3[input.Length];
-
-        for (int i = 0; i < input.Length; i++)
-        {
-            Vector4 temp1 = Transformations.Scale(input[i], 1f, 1f, 0.5f);
-            temp1.w = 1;
-            Vector4 temp2 = Transformations.Translate(temp1, -side, -side / 2, 0f);
-            Vector4 temp3 = Transformations.RotateX(temp2, rotX);
-            Vector4 temp4 = Transformations.Translate(temp3, 0, side * 2.5f, side / 4);
-            output[i] = temp4;
-        }
-
-        return output;
-    }
 
     public static Vector3[] DoTransformThighLeft(Vector3[] input, float rotX, float side)
     {
@@ -237,7 +221,7 @@ public class Walker
         return output;
     }
 
-    public static Vector3[] DoTransformCalveRightBack(Vector3[] input, float rotX, float side)
+    public static Vector3[] DoTransformThighRight(Vector3[] input, float rotX, float side)
     {
         Vector3[] output = new Vector3[input.Length];
 
@@ -245,10 +229,30 @@ public class Walker
         {
             Vector4 temp1 = Transformations.Scale(input[i], 1f, 1f, 0.5f);
             temp1.w = 1;
-            Vector4 temp2 = Transformations.Translate(temp1, -side, -side * 1.5f, 0f);
+            Vector4 temp2 = Transformations.Translate(temp1, -side, -side / 2, 0f);
             Vector4 temp3 = Transformations.RotateX(temp2, rotX);
             Vector4 temp4 = Transformations.Translate(temp3, 0, side * 2.5f, side / 4);
             output[i] = temp4;
+        }
+
+        return output;
+    } 
+
+    public static Vector3[] DoTransformCalveRightBack(Vector3[] input, float rotX, float side, float rotKnee)
+    {
+        Vector3[] output = new Vector3[input.Length];
+
+        for (int i = 0; i < input.Length; i++)
+        {
+            Vector4 temp1 = Transformations.Scale(input[i], 1f, 1f, 0.5f);
+            temp1.w = 1;
+            Vector4 temp2 = Transformations.Translate(temp1, 0, -side * 0.5f, 0f);
+            Vector4 temp3 = Transformations.RotateX(temp2, rotKnee);
+            Vector4 temp4 = Transformations.Translate(temp3, 0, side * 0.5f, 0f);
+            Vector4 temp5 = Transformations.Translate(temp4, -side, -side * 1.5f, 0f);
+            Vector4 temp6 = Transformations.RotateX(temp5, rotX);
+            Vector4 temp7 = Transformations.Translate(temp6, 0, side * 2.5f, side / 4);
+            output[i] = temp7;
         }
 
         return output;

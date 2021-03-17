@@ -3,7 +3,6 @@
 //Alan Mendoza
 //Emiliano Roldan
 
-
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,53 +15,76 @@ public class Robot : MonoBehaviour
     float rotationArm = 0.0f;
     float rotationTorax = 0.0f;
     float dir = 1.0f;    // dir can only be 1 or -1
-    float delta = 0.5f;  // how much to change rotation on each frame
+    float delta = 0.2f;  // how much to change rotation on each frame
     float minAngle = -45.0f;  // minimum rotation angle in X
     float maxAngle = 45.0f;   // maximum rotation angle in X
 
-    public GameObject right_feet;
-    public GameObject left_feet;
-    public GameObject right_calve;
-    public GameObject left_calve;
-    public GameObject right_thigh;
-    public GameObject left_thigh;
-    public GameObject hip;
-    public GameObject body;
-    public GameObject head;
-    public GameObject neck;
-    public GameObject right_shoulder;
-    public GameObject right_bicep;
-    public GameObject right_forearm;
-    public GameObject right_hand;
-    public GameObject left_shoulder;
-    public GameObject left_bicep;
-    public GameObject left_forearm;
-    public GameObject left_hand;
+    float rotationKnee = -40.0f;
+    float dirKnee = 1.0f;
+
+    GameObject right_feet;
+    GameObject left_feet;
+    GameObject right_calve;
+    GameObject left_calve;
+    GameObject right_thigh;
+    GameObject left_thigh;
+    GameObject hip;
+    GameObject body;
+    GameObject head;
+    GameObject neck;
+    GameObject right_shoulder;
+    GameObject right_bicep;
+    GameObject right_forearm;
+    GameObject right_hand;
+    GameObject left_shoulder;
+    GameObject left_bicep;
+    GameObject left_forearm;
+    GameObject left_hand;
 
     Vector3[] vertices;
 
-    public Mesh rightFeetMesh;
-    public Mesh leftFeetMesh;
-    public Mesh rightCalve;
-    public Mesh leftCalve;
-    public Mesh rightThighMesh;
-    public Mesh leftThighMesh;
-    public Mesh hipMesh;
-    public Mesh bodyMesh;
-    public Mesh headMesh;
-    public Mesh neckMesh;
-    public Mesh rightShoulderMesh;
-    public Mesh rightBicepMesh;
-    public Mesh rightForearmMesh;
-    public Mesh rightHandMesh;
-    public Mesh leftShoulderMesh;
-    public Mesh leftBicepMesh;
-    public Mesh leftForearmMesh;
-    public Mesh leftHandMesh;
+    Mesh rightFeetMesh;
+    Mesh leftFeetMesh;
+    Mesh rightCalve;
+    Mesh leftCalve;
+    Mesh rightThighMesh;
+    Mesh leftThighMesh;
+    Mesh hipMesh;
+    Mesh bodyMesh;
+    Mesh headMesh;
+    Mesh neckMesh;
+    Mesh rightShoulderMesh;
+    Mesh rightBicepMesh;
+    Mesh rightForearmMesh;
+    Mesh rightHandMesh;
+    Mesh leftShoulderMesh;
+    Mesh leftBicepMesh;
+    Mesh leftForearmMesh;
+    Mesh leftHandMesh;
 
     // Start is called before the first frame update
     void Start()
     {
+        right_feet = new GameObject("right feet");
+        left_feet = new GameObject("left feet");
+        right_calve = new GameObject("right_calve");
+        left_calve = new GameObject("left calve");
+        right_thigh = new GameObject("right thigh");
+        left_thigh = new GameObject("left thigh");
+        hip = new GameObject("hip");
+        body = new GameObject("body");
+        head = new GameObject("head");
+        neck = new GameObject("neck");
+        right_shoulder = new GameObject("right shoulder");
+        right_bicep = new GameObject("right bicep");
+        right_forearm = new GameObject("right forearm");
+        right_hand = new GameObject("right hand");
+        left_shoulder = new GameObject("left shoulder");
+        left_bicep = new GameObject("left bicep");
+        left_forearm = new GameObject("left forearm");
+        left_hand = new GameObject("left hand");
+        left_hand = new GameObject("left hand");
+
         rightFeetMesh = new Mesh();
         leftFeetMesh = new Mesh();
         rightCalve = new Mesh();
@@ -449,19 +471,27 @@ public class Robot : MonoBehaviour
         bodyMesh.vertices = Walker.DoTransformTorax(vertices, rotationTorax, side);
         rightShoulderMesh.vertices = Walker.ShoulderRight(vertices, rotationTorax, side);
         leftShoulderMesh.vertices = Walker.ShoulderLeft(vertices, rotationTorax, side);
-        
+
         //rightCalve.vertices = Walker.DoTransformKnee(vertices, -rotationX);
 
-        //CALVE ENFRENTE
         if (dir < 0)
         {
             rightCalve.vertices = Walker.DoTransformCalveRightFront(vertices, rotationX, side);
         }
         else
         {
-            rightCalve.vertices = Walker.DoTransformCalveRightBack(vertices, rotationX, side);
+            if (rotationX < -25.0f)
+            {
+                rotationKnee += dirKnee * delta * -2;
+            }
+            if (rotationX > 25.0f)
+            {
+                rotationKnee += dirKnee * delta * 2;
+                Debug.Log(rotationKnee);
+            }
+            rightCalve.vertices = Walker.DoTransformCalveRightBack(vertices, rotationX, side, rotationKnee);
         }
 
-        
+
     }
 }
