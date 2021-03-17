@@ -22,6 +22,9 @@ public class Robot : MonoBehaviour
     float rotationKnee = -40.0f;
     float dirKnee = 1.0f;
 
+    float rotationKneeLeft = 0f;
+    float dirKneeLeft = 1.0f;
+
     GameObject right_feet;
     GameObject left_feet;
     GameObject right_calve;
@@ -477,9 +480,24 @@ public class Robot : MonoBehaviour
         if (dir < 0)
         {
             rightCalve.vertices = Walker.DoTransformCalveRightFront(vertices, rotationX, side);
+            rightFeetMesh.vertices = Walker.DoTransformFootRightFront(vertices, rotationX, side);
+
+            if (rotationX > -25.0f)
+            {
+                rotationKneeLeft += dirKneeLeft * delta * -2;
+            }
+            if (rotationX < 25.0f)
+            {
+                rotationKneeLeft += dirKneeLeft * delta * 2;
+            }
+            leftCalve.vertices = Walker.DoTransformCalveLeftBack(vertices, -rotationX, side, rotationKneeLeft);
+            leftFeetMesh.vertices = Walker.DoTransformFootLeftBack(vertices, -rotationX, side, rotationKneeLeft);
         }
         else
         {
+            leftCalve.vertices = Walker.DoTransformCalveLeftFront(vertices, -rotationX, side);
+            leftFeetMesh.vertices = Walker.DoTransformFootLeftFront(vertices, -rotationX, side);
+
             if (rotationX < -25.0f)
             {
                 rotationKnee += dirKnee * delta * -2;
@@ -487,9 +505,9 @@ public class Robot : MonoBehaviour
             if (rotationX > 25.0f)
             {
                 rotationKnee += dirKnee * delta * 2;
-                Debug.Log(rotationKnee);
             }
             rightCalve.vertices = Walker.DoTransformCalveRightBack(vertices, rotationX, side, rotationKnee);
+            rightFeetMesh.vertices = Walker.DoTransformFootRightBack(vertices, rotationX, side, rotationKnee);
         }
 
 
