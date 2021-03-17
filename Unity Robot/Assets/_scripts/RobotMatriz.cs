@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class RobotMatriz : MonoBehaviour
 {
-    List<GameObject> BONES;
+    List<GameObject> bones;
     
-    public enum Bones
+    public enum BONES
     {
         HIPS,
         TORSO,
