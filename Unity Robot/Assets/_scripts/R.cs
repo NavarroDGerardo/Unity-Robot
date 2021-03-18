@@ -8,17 +8,20 @@ public class R : MonoBehaviour
     List<GameObject> bones;
 
     public static float side = 10.0f;
-    float dir = 0.0f;  
-    float rotationX = 1.0f;
-    float delta = 0.2f;  // how much to change rotation on each frame
-    float minAngle = -45.0f;  // minimum rotation angle in X
-    float maxAngle = 45.0f;   // maximum rotation angle in X
+    float dir = 1.0f; 
+    float dirKnee = 1.0f;  
+    float rotationX = 0.0f;
+    float rotationKnee = 0.0f;
+    float delta = 1.0f;  // how much to change rotation on each frame
+    float minAngle = -20.0f;  // minimum rotation angle in X
+    float maxAngle = 20.0f;   // maximum rotation angle in X
 
-    float rotationKnee = -40.0f;
-    float dirKnee = 1.0f;
 
-    float rotationKneeLeft = 0f;
-    float dirKneeLeft = 1.0f;
+    float minAngleKnee = -20.0f;  // minimum rotation angle in X
+    float maxAngleKnee = 0.0f;
+
+
+    float deltaKnee = 0.5f; 
 
     public enum BONES
     {
@@ -104,19 +107,19 @@ public class R : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        rotationX += dir * delta;
-        if (rotationX > maxAngle || rotationX < minAngle) dir = -dir;
 
         //HIPS:
         Matrix4x4 hipsS = TransformationSergio.ScaleM(1, 0.3f, 0.6f);
+        //Matrix4x4 hipsR = TransformationSergio.RotateM(rotationX, TransformationSergio.AXIS.AX_Y);
         Matrix4x4 hipsM = hipsS;
         Matrix4x4 hipsI = Matrix4x4.identity;
         ApplyTransformations(hipsM, bones[(int)BONES.HIPS]);
 
         //TORSO:
         Matrix4x4 torsoT = TransformationSergio.TranslateM(0, 0.7f, 0);
+        Matrix4x4 torsoR = TransformationSergio.RotateM(rotationX/2.0f, TransformationSergio.AXIS.AX_Y);
         Matrix4x4 torsoS = TransformationSergio.ScaleM(1.0f, 1.0f, 0.5f);
-        Matrix4x4 torsoI = hipsI * torsoT;
+        Matrix4x4 torsoI = hipsI * torsoT*torsoR;
         Matrix4x4 torsoM = torsoI * torsoS;
         //ApplyTransformations(torsoM, bones[(int)BONES.TORSO]);
         ApplyTransformationsROTATION(torsoM, bones[(int)BONES.TORSO], rotationX);
@@ -136,32 +139,36 @@ public class R : MonoBehaviour
         ApplyTransformations(shoulderML, bones[(int)BONES.SHOULDERLEFT]);
 
         //RIGHTBICEP
+        Matrix4x4 bicepRR = TransformationSergio.RotateM(-rotationX, TransformationSergio.AXIS.AX_X);
         Matrix4x4 bicepTR = TransformationSergio.TranslateM(0.0f, -0.40f, 0);
         Matrix4x4 bicepSR = TransformationSergio.ScaleM(0.2f, 0.4f, 0.2f);
-        Matrix4x4 bicepIR = shoulderIR * bicepTR;
+        Matrix4x4 bicepIR = shoulderIR * bicepTR* bicepRR;
         Matrix4x4 bicepMR = bicepIR * bicepSR;
         ApplyTransformations(bicepMR, bones[(int)BONES.RIGHTBICEP]);
 
         //LEFTBICEP
+        Matrix4x4 bicepLR = TransformationSergio.RotateM(rotationX, TransformationSergio.AXIS.AX_X);
         Matrix4x4 bicepTL = TransformationSergio.TranslateM(0.0f, -0.40f, 0);
         Matrix4x4 bicepSL = TransformationSergio.ScaleM(0.2f, 0.4f, 0.2f);
-        Matrix4x4 bicepIL = shoulderIL * bicepTL;
+        Matrix4x4 bicepIL = shoulderIL * bicepTL * bicepLR;
         Matrix4x4 bicepML = bicepIL * bicepSL;
         ApplyTransformations(bicepML, bones[(int)BONES.LEFTBICEP]);
 
 
 
         //RIGHTFOREARM
+        Matrix4x4 forearmRR = TransformationSergio.RotateM(-rotationKnee, TransformationSergio.AXIS.AX_X);
         Matrix4x4 forearmTR = TransformationSergio.TranslateM(0.0f, -0.40f, 0);
         Matrix4x4 forearmSR = TransformationSergio.ScaleM(0.2f, 0.4f, 0.2f);
-        Matrix4x4 forearmIR = bicepIR * forearmTR;
+        Matrix4x4 forearmIR = bicepIR * forearmTR * forearmRR;
         Matrix4x4 forearmMR = forearmIR * forearmSR;
         ApplyTransformations(forearmMR, bones[(int)BONES.RIGHTFOREARM]);
 
         //LEFTFOREARM
+        Matrix4x4 forearmLR = TransformationSergio.RotateM(-rotationKnee, TransformationSergio.AXIS.AX_X);
         Matrix4x4 forearmTL = TransformationSergio.TranslateM(0.0f, -0.40f, 0);
         Matrix4x4 forearmSL = TransformationSergio.ScaleM(0.2f, 0.4f, 0.2f);
-        Matrix4x4 forearmIL = bicepIL * forearmTL;
+        Matrix4x4 forearmIL = bicepIL * forearmTL * forearmLR;
         Matrix4x4 forearmML = forearmIL * forearmSL;
         ApplyTransformations(forearmML, bones[(int)BONES.LEFTFOREARM]);
 
@@ -180,30 +187,53 @@ public class R : MonoBehaviour
         ApplyTransformations(handML, bones[(int)BONES.LEFTHAND]);
 
         //RIGHTHIGH:
+
+
+        /*
+        Vector4 temp1 = Transformations.Scale(input[i], 1f, 1f, 0.5f);
+        temp1.w = 1;
+        Vector4 temp2 = Transformations.Translate(temp1, -side, -side / 2, 0f);
+        Vector4 temp3 = Transformations.RotateX(temp2, rotX);
+        Vector4 temp4 = Transformations.Translate(temp3, 0, side * 2.5f, side / 4);
+
+        */ 
+
+        //Matrix4x4 thighTR = TransformationSergio.TranslateM(-0.25f, -0.4f, 0);
+        Matrix4x4 thighRR = TransformationSergio.RotateM(rotationX, TransformationSergio.AXIS.AX_X);
         Matrix4x4 thighTR = TransformationSergio.TranslateM(-0.25f, -0.4f, 0);
         Matrix4x4 thighSR = TransformationSergio.ScaleM(0.3f, 0.5f, 0.5f);
-        Matrix4x4 thighIR = hipsI * thighTR;
+        Matrix4x4 thighIR = hipsI * thighTR * thighRR;
         Matrix4x4 thighMR = thighIR * thighSR;
         ApplyTransformations(thighMR, bones[(int)BONES.RIGHTTHIGH]);
 
         //LEFTTHIGH:
+        Matrix4x4 thighLR = TransformationSergio.RotateM(-rotationX, TransformationSergio.AXIS.AX_X);
         Matrix4x4 thighTL = TransformationSergio.TranslateM(0.25f, -0.4f, 0);
         Matrix4x4 thighSL = TransformationSergio.ScaleM(0.3f, 0.5f, 0.5f);
-        Matrix4x4 thighIL = hipsI * thighTL;
+        Matrix4x4 thighIL = hipsI * thighTL*thighLR;
         Matrix4x4 thighML = thighIL * thighSL;
         ApplyTransformations(thighML, bones[(int)BONES.LEFTTHIGH]);
 
         //RIGHTCALVE:
+        
+        /*
+        if(dir < 0){
+            rotationKnee = rotationX;
+        }else{
+            rotationKnee = rotationX/5f;
+        }*/
+        Matrix4x4 calveRR = TransformationSergio.RotateM(rotationKnee, TransformationSergio.AXIS.AX_X);
         Matrix4x4 calveTR = TransformationSergio.TranslateM(0.0f, -0.5f, 0);
         Matrix4x4 calveSR = TransformationSergio.ScaleM(0.3f, 0.5f, 0.5f);
-        Matrix4x4 calveIR = thighIR * calveTR;
+        Matrix4x4 calveIR = thighIR * calveTR * calveRR;
         Matrix4x4 calveMR = calveIR * calveSR;
         ApplyTransformations(calveMR, bones[(int)BONES.RIGHTCALVE]);
 
         //LEFTCALVE:
+        Matrix4x4 calveLR = TransformationSergio.RotateM(rotationKnee, TransformationSergio.AXIS.AX_X);
         Matrix4x4 calveTL = TransformationSergio.TranslateM(0.0f, -0.5f, 0);
         Matrix4x4 calveSL = TransformationSergio.ScaleM(0.3f, 0.5f, 0.5f);
-        Matrix4x4 calveIL = thighIL * calveTL;
+        Matrix4x4 calveIL = thighIL * calveTL * calveLR;
         Matrix4x4 calveML = calveIL * calveSL;
         ApplyTransformations(calveML, bones[(int)BONES.LEFTCALVE]);
 
@@ -224,9 +254,9 @@ public class R : MonoBehaviour
 
         //NECK
         Matrix4x4 neckT = TransformationSergio.TranslateM(0, 0.6f, 0);
-        Matrix4x4 neckR = TransformationSergio.RotateM(30, TransformationSergio.AXIS.AX_X);
+        Matrix4x4 neckR = TransformationSergio.RotateM(rotationX/2.0f, TransformationSergio.AXIS.AX_X);
         Matrix4x4 neckS = TransformationSergio.ScaleM(0.3f, 0.3f, 0.3f);
-        Matrix4x4 neckI = torsoI * neckT;
+        Matrix4x4 neckI = torsoI * neckT * neckR;
         Matrix4x4 neckM = neckI * neckS;
         ApplyTransformations(neckM, bones[(int)BONES.NECK]);
 
@@ -235,6 +265,13 @@ public class R : MonoBehaviour
         Matrix4x4 headS = TransformationSergio.ScaleM(0.5f, 0.5f, 0.5f);
         Matrix4x4 headM = neckI * headT * headS;
         ApplyTransformations(headM, bones[(int)BONES.HEAD]);
+
+
+        rotationX += dir * delta;
+        if (rotationX > maxAngle || rotationX < minAngle) dir = -dir;
+
+        rotationKnee += dirKnee * deltaKnee;
+        if (rotationKnee > maxAngleKnee || rotationKnee < minAngleKnee) dirKnee = -dirKnee;
 
         /*
         if (dir < 0)
