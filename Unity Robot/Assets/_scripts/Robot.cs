@@ -1,487 +1,282 @@
-﻿//Edgar Lopez
-//Diego Gerardo Navarro
-//Alan Mendoza
-//Emiliano Roldan
-
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Robot : MonoBehaviour
 {
-    public float side = 10.0f;
+    // Start is called before the first frame update
+    List<GameObject> bones;
 
+    public static float side = 10.0f;
+    float dir = 1.0f; 
+    float dirKnee = 1.0f;  
     float rotationX = 0.0f;
-    float rotationArm = 0.0f;
-    float rotationTorax = 0.0f;
-    float dir = 1.0f;    // dir can only be 1 or -1
-    float delta = 1.3f;  // how much to change rotation on each frame
-    float minAngle = -45.0f;  // minimum rotation angle in X
-    float maxAngle = 45.0f;   // maximum rotation angle in X
+    float rotationKnee = 0.0f;
+    float delta = 0.5f;  // how much to change rotation on each frame
+    float minAngle = -20.0f;  // minimum rotation angle in X
+    float maxAngle = 20.0f;   // maximum rotation angle in X
 
-    float rotationKnee = -40.0f;
-    float dirKnee = 1.0f;
 
-    float rotationKneeLeft = 0f;
-    float dirKneeLeft = 1.0f;
+    float minAngleKnee = -20.0f;  // minimum rotation angle in X
+    float maxAngleKnee = 0.0f;
 
-    GameObject right_feet;
-    GameObject left_feet;
-    GameObject right_calve;
-    GameObject left_calve;
-    GameObject right_thigh;
-    GameObject left_thigh;
-    GameObject hip;
-    GameObject body;
-    GameObject head;
-    GameObject neck;
-    GameObject right_shoulder;
-    GameObject right_bicep;
-    GameObject right_forearm;
-    GameObject right_hand;
-    GameObject left_shoulder;
-    GameObject left_bicep;
-    GameObject left_forearm;
-    GameObject left_hand;
 
-    Vector3[] vertices;
+    float deltaKnee = 0.25f; 
 
-    Mesh rightFeetMesh;
-    Mesh leftFeetMesh;
-    Mesh rightCalve;
-    Mesh leftCalve;
-    Mesh rightThighMesh;
-    Mesh leftThighMesh;
-    Mesh hipMesh;
-    Mesh bodyMesh;
-    Mesh headMesh;
-    Mesh neckMesh;
-    Mesh rightShoulderMesh;
-    Mesh rightBicepMesh;
-    Mesh rightForearmMesh;
-    Mesh rightHandMesh;
-    Mesh leftShoulderMesh;
-    Mesh leftBicepMesh;
-    Mesh leftForearmMesh;
-    Mesh leftHandMesh;
+    public enum BONES
+    {
+        HIPS,
+        TORSO,
+        NECK,
+        HEAD,
+
+       
+        RIGHTTHIGH,
+        LEFTTHIGH,
+        LEFTCALVE,
+        RIGHTCALVE,
+
+        RIGHTFOOT,
+        LEFTFOOT,
+
+        SHOULDERRIGHT,
+        SHOULDERLEFT,
+
+        LEFTBICEP,
+        RIGHTBICEP,
+        LEFTFOREARM,
+        RIGHTFOREARM,
+        LEFTHAND,
+        RIGHTHAND,
+         
+    };
+
+    public static void ApplyTransformations(Matrix4x4 t, GameObject target)
+    {
+        
+        Block b = target.GetComponent<Block>();
+        Vector3[] newVerts = new Vector3[8];
+        for (int v = 0; v < b.vertices.Length; v++)
+        {
+            Vector4 temp = b.vertices[v];
+            temp.w = 1;
+            newVerts[v] = t * temp;
+        }
+        b.myMesh.vertices = newVerts;
+    }
+
+
+    public static void ApplyTransformationsROTATION(Matrix4x4 t, GameObject target, float rotX)
+    {
+        
+        Block b = target.GetComponent<Block>();
+        Vector3[] newVerts = new Vector3[8];
+        for (int v = 0; v < b.vertices.Length; v++)
+        {
+            Vector4 temp = b.vertices[v];
+            temp.w = 1;
+
+            //Vector4 temp2 = Transformations.Translate(temp1, -side, -side * 1.5f, 0f);
+            Vector4 temp2 = Walker.RotateX(temp, -rotX);
+            //Vector4 temp4 = Transformations.Translate(temp3, 0, side * 2.5f, side / 4);
+            Vector4 temp3 = Walker.Translate(temp2, -side*2, side*2.5f, side/4);
+            newVerts[v] = t * temp;
+        
+        }
+        b.myMesh.vertices = newVerts;
+    }
 
 
     // Start is called before the first frame update
     void Start()
     {
-        right_feet = new GameObject("right feet");
-        left_feet = new GameObject("left feet");
-        right_calve = new GameObject("right_calve");
-        left_calve = new GameObject("left calve");
-        right_thigh = new GameObject("right thigh");
-        left_thigh = new GameObject("left thigh");
-        hip = new GameObject("hip");
-        body = new GameObject("body");
-        head = new GameObject("head");
-        neck = new GameObject("neck");
-        right_shoulder = new GameObject("right shoulder");
-        right_bicep = new GameObject("right bicep");
-        right_forearm = new GameObject("right forearm");
-        right_hand = new GameObject("right hand");
-        left_shoulder = new GameObject("left shoulder");
-        left_bicep = new GameObject("left bicep");
-        left_forearm = new GameObject("left forearm");
-        left_hand = new GameObject("left hand");
-        left_hand = new GameObject("left hand");
+        bones = new List<GameObject>();
 
-        rightFeetMesh = new Mesh();
-        leftFeetMesh = new Mesh();
-        rightCalve = new Mesh();
-        leftCalve = new Mesh();
-        rightThighMesh = new Mesh();
-        leftThighMesh = new Mesh();
-        hipMesh = new Mesh();
-        bodyMesh = new Mesh();
-        headMesh = new Mesh();
-        neckMesh = new Mesh();
-        rightShoulderMesh = new Mesh();
-        rightBicepMesh = new Mesh();
-        rightForearmMesh = new Mesh();
-        rightHandMesh = new Mesh();
-        leftShoulderMesh = new Mesh();
-        leftBicepMesh = new Mesh();
-        leftForearmMesh = new Mesh();
-        leftHandMesh = new Mesh();
-
-        float hSide = side / 2.0f;
-
-        vertices = new Vector3[8]
+        System.Array values = System.Enum.GetValues(typeof(BONES));
+        foreach (BONES bone in values)
         {
-            new Vector3(-hSide, -hSide, hSide),
-            new Vector3(hSide, -hSide, hSide),
-            new Vector3(hSide, hSide, hSide),
-            new Vector3(-hSide, hSide, hSide),
+            bones.Add(new GameObject(bone.ToString()));
+        }
 
-            new Vector3(hSide, -hSide, -hSide),
-            new Vector3(hSide, hSide, -hSide),
-            new Vector3(-hSide, -hSide, -hSide),
-            new Vector3(-hSide, hSide, -hSide)
-        };
-
-        //rigthFoot transformatiosn
-        Vector3[] rightFootVertices = Construction.scaleVerticesY(vertices, 0.5f);
-        rightFootVertices = Construction.translateVerticesX(rightFootVertices, -side);
-        rightFootVertices = Construction.translateVerticesY(rightFootVertices, side/4);
-        rightFeetMesh.vertices = rightFootVertices;
-
-        //leftFoot construction
-        Vector3[] leftFootVertices = Construction.scaleVerticesY(vertices, 0.5f);
-        leftFootVertices = Construction.translateVerticesX(leftFootVertices, side);
-        leftFootVertices = Construction.translateVerticesY(leftFootVertices, side/4);
-        leftFeetMesh.vertices = leftFootVertices;
-
-        //rightCalve construction 
-        Vector3[] rightCalveVertices = Construction.scaleVerticesZ(vertices, 0.5f);
-        rightCalveVertices = Construction.translateVerticesX(rightCalveVertices, -side);
-        rightCalveVertices = Construction.translateVerticesY(rightCalveVertices, side);
-        rightCalveVertices = Construction.translateVerticesZ(rightCalveVertices, side/4);
-        rightCalve.vertices = rightCalveVertices;
-
-        //leftCalve construction 
-        Vector3[] leftCalveVertices = Construction.scaleVerticesZ(vertices, 0.5f);
-        leftCalveVertices = Construction.translateVerticesX(leftCalveVertices, side);
-        leftCalveVertices = Construction.translateVerticesY(leftCalveVertices, side);
-        leftCalveVertices = Construction.translateVerticesZ(leftCalveVertices, side / 4);
-        leftCalve.vertices = leftCalveVertices;
-
-        //rightThighMesh construction
-        /*Vector3[] rightThighVertices = Construction.scaleVerticesZ(vertices, 0.5f);
-        rightThighVertices = Construction.translateVerticesX(rightThighVertices, -side);
-        rightThighVertices = Construction.translateVerticesY(rightThighVertices, side*2);
-        rightThighVertices = Construction.translateVerticesZ(rightThighVertices, side / 4);*/
-        rightThighMesh.vertices = vertices;
-
-        //leftThighMesh construction
-        Vector3[] leftThighVertices = Construction.scaleVerticesZ(vertices, 0.5f);
-        leftThighVertices = Construction.translateVerticesX(leftThighVertices, side);
-        leftThighVertices = Construction.translateVerticesY(leftThighVertices, side * 2);
-        leftThighVertices = Construction.translateVerticesZ(leftThighVertices, side / 4);
-        leftThighMesh.vertices = leftThighVertices;
-
-        //hipMesh construction Y = 30, Z = 2.5 -> scale x = 3
-        //HIPS:
-        Vector3[] hipVertices = Construction.scaleVerticesX(vertices, 3f);
-        hipVertices = Construction.translateVerticesY(hipVertices, side * 3);
-        hipVertices = Construction.translateVerticesZ(hipVertices, side / 4);
-        hipMesh.vertices = hipVertices;
-
-        //bodyMesh construction Y = 45, Z = 2.5 -> scale x = 3 y = 2 z = 2
-        Vector3[] bodyVertices = Construction.scaleVerticesX(vertices, 3f);
-        bodyVertices = Construction.scaleVerticesY(bodyVertices, 2f);
-        bodyVertices = Construction.scaleVerticesZ(bodyVertices, 2f);
-        bodyVertices = Construction.translateVerticesY(bodyVertices, side * 4 + side / 2);
-        bodyVertices = Construction.translateVerticesZ(bodyVertices, side / 4);
-        bodyMesh.vertices = bodyVertices;
-
-        //headMesh construction Y = 60 z = 2.5
-        Vector3[] headVertices = Construction.translateVerticesY(vertices, side * 6.4f);
-        headVertices = Construction.translateVerticesZ(headVertices, side / 4);
-        headMesh.vertices = headVertices;
-
-        //neckMesh construction
-        Vector3[] neckVertices = Construction.scaleVerticesX(vertices, 0.6f);
-        neckVertices = Construction.scaleVerticesY(neckVertices, 0.4f);
-        neckVertices = Construction.scaleVerticesZ(neckVertices, 0.6f);
-        neckVertices = Construction.translateVerticesY(neckVertices, side * 5.7f);
-        neckVertices = Construction.translateVerticesZ(neckVertices, side / 4);
-        neckMesh.vertices = neckVertices;
-
-        //rightShoulderMesh construction
-        Vector3[] rightShoulderVertices = Construction.translateVerticesX(vertices, side * 2);
-        rightShoulderVertices = Construction.translateVerticesY(rightShoulderVertices, side * 5);
-        rightShoulderVertices = Construction.translateVerticesZ(rightShoulderVertices, side / 4);
-        rightShoulderMesh.vertices = rightShoulderVertices;
-
-        //rightBicepMesh construction
-        Vector3[] rightBicepVertices = Construction.scaleVerticesY(vertices, 1.5f);
-        rightBicepVertices = Construction.scaleVerticesZ(rightBicepVertices, 0.5f);
-        rightBicepVertices = Construction.scaleVerticesX(rightBicepVertices, 0.5f);
-        rightBicepVertices = Construction.translateVerticesY(rightBicepVertices, side * 4);
-        rightBicepVertices = Construction.translateVerticesZ(rightBicepVertices, side / 4);
-        rightBicepVertices = Construction.translateVerticesX(rightBicepVertices, side * 2);
-        rightBicepMesh.vertices = rightBicepVertices;
-
-        //rightForearmMesh construction
-        Vector3[] rightForearmVertices = Construction.scaleVerticesY(vertices, 0.75f);
-        rightForearmVertices = Construction.scaleVerticesZ(rightForearmVertices, 0.75f);
-        rightForearmVertices = Construction.scaleVerticesX(rightForearmVertices, 0.65f);
-        rightForearmVertices = Construction.translateVerticesY(rightForearmVertices, side * 3);
-        rightForearmVertices = Construction.translateVerticesZ(rightForearmVertices, side / 4);
-        rightForearmVertices = Construction.translateVerticesX(rightForearmVertices, side * 2);
-        rightForearmMesh.vertices = rightForearmVertices;
-
-        //rightHandMesh construction
-        Vector3[] rightHandVertices = Construction.scaleVerticesX(vertices, 0.5f);
-        rightHandVertices = Construction.scaleVerticesY(rightHandVertices, 0.5f);
-        rightHandVertices = Construction.scaleVerticesZ(rightHandVertices, 0.5f);
-        rightHandVertices = Construction.translateVerticesX(rightHandVertices, side * 2f);
-        rightHandVertices = Construction.translateVerticesY(rightHandVertices, side * 2.5f);
-        rightHandVertices = Construction.translateVerticesZ(rightHandVertices, side / 4);
-        rightHandMesh.vertices = rightHandVertices;
-
-        //left ShoulderMesh construction
-        Vector3[] leftShoulderVertices = Construction.translateVerticesX(vertices, - side * 2);
-        leftShoulderVertices = Construction.translateVerticesY(leftShoulderVertices, side * 5);
-        leftShoulderVertices = Construction.translateVerticesZ(leftShoulderVertices, side / 4);
-        leftShoulderMesh.vertices = leftShoulderVertices;
-
-        //left BicepMesh construction
-        Vector3[] leftBicepVertices = Construction.scaleVerticesY(vertices, 1.5f);
-        leftBicepVertices = Construction.scaleVerticesZ(leftBicepVertices, 0.5f);
-        leftBicepVertices = Construction.scaleVerticesX(leftBicepVertices, 0.5f);
-        leftBicepVertices = Construction.translateVerticesX(leftBicepVertices, -side * 2);
-        leftBicepVertices = Construction.translateVerticesY(leftBicepVertices, side * 4);
-        leftBicepVertices = Construction.translateVerticesZ(leftBicepVertices, side / 6);
-        leftBicepMesh.vertices = leftBicepVertices;
-
-        //left ForearmMesh construction
-        Vector3[] leftForearmVertices = Construction.scaleVerticesY(vertices, 0.75f);
-        leftForearmVertices = Construction.scaleVerticesZ(leftForearmVertices, 0.75f);
-        leftForearmVertices = Construction.scaleVerticesX(leftForearmVertices, 0.65f);
-        leftForearmVertices = Construction.translateVerticesX(leftForearmVertices, -side * 2);
-        leftForearmVertices = Construction.translateVerticesY(leftForearmVertices, side * 3);
-        leftForearmVertices = Construction.translateVerticesZ(leftForearmVertices, side / 4);
-        leftForearmMesh.vertices = leftForearmVertices;
-
-        //left HandMesh construction
-        Vector3[] leftHandVertices = Construction.scaleVerticesX(vertices, 0.5f);
-        leftHandVertices = Construction.scaleVerticesY(leftHandVertices, 0.5f);
-        leftHandVertices = Construction.scaleVerticesZ(leftHandVertices, 0.5f);
-        leftHandVertices = Construction.translateVerticesX(leftHandVertices, -side*2f);
-        leftHandVertices = Construction.translateVerticesY(leftHandVertices, side * 2.5f);
-        leftHandVertices = Construction.translateVerticesZ(leftHandVertices, side / 4);
-        leftHandMesh.vertices = leftHandVertices;
-
-        // Topology:
-        int[] tris = new int[]
+        foreach (GameObject bone in bones)
         {
-            0, 1, 2,
-            0, 2, 3,
-            1, 4, 5,
-            1, 5, 2,
-            4, 6, 7,
-            4, 7, 5,
-            6, 0, 3,
-            6, 3, 7,
-            3, 2, 5,
-            3, 5, 7,
-            1, 0, 6,
-            1, 6, 4
-        };
-        rightFeetMesh.triangles = tris;
-        leftFeetMesh.triangles = tris;
-        rightCalve.triangles = tris;
-        leftCalve.triangles = tris;
-        rightThighMesh.triangles = tris;
-        leftThighMesh.triangles = tris;
-        hipMesh.triangles = tris;
-        bodyMesh.triangles = tris;
-        headMesh.triangles = tris;
-        neckMesh.triangles = tris;
-        rightShoulderMesh.triangles = tris;
-        rightBicepMesh.triangles = tris;
-        rightForearmMesh.triangles = tris;
-        rightHandMesh.triangles = tris;
-        leftShoulderMesh.triangles = tris;
-        leftBicepMesh.triangles = tris;
-        leftForearmMesh.triangles = tris;
-        leftHandMesh.triangles = tris;
-
-        // Normals:
-        Vector3[] normals = new Vector3[]
-        {
-            new Vector3(0,0,-1),
-            new Vector3(0,0,-1),
-            new Vector3(0,0,-1),
-            new Vector3(0,0,-1),
-            new Vector3(0,0,-1),
-            new Vector3(0,0,-1),
-            new Vector3(0,0,-1),
-            new Vector3(0,0,-1)
-        };
-
-        rightFeetMesh.normals = normals;
-        rightFeetMesh.RecalculateNormals();
-        leftFeetMesh.normals = normals;
-        leftFeetMesh.RecalculateNormals();
-        rightCalve.normals = normals;
-        rightCalve.RecalculateNormals();
-        leftCalve.normals = normals;
-        leftCalve.RecalculateNormals();
-        rightThighMesh.normals = normals;
-        rightThighMesh.RecalculateNormals();
-        leftThighMesh.normals = normals;
-        leftThighMesh.RecalculateNormals();
-        hipMesh.normals = normals;
-        hipMesh.RecalculateNormals();
-        bodyMesh.normals = normals;
-        bodyMesh.RecalculateNormals();
-        headMesh.normals = normals;
-        headMesh.RecalculateNormals();
-        neckMesh.normals = normals;
-        neckMesh.RecalculateNormals();
-        rightShoulderMesh.normals = normals;
-        rightShoulderMesh.RecalculateNormals();
-        rightBicepMesh.normals = normals;
-        rightBicepMesh.RecalculateNormals();
-        rightForearmMesh.normals = normals;
-        rightForearmMesh.RecalculateNormals();
-        rightHandMesh.normals = normals;
-        rightHandMesh.RecalculateNormals();
-        leftShoulderMesh.normals = normals;
-        leftShoulderMesh.RecalculateNormals();
-        leftBicepMesh.normals = normals;
-        leftBicepMesh.RecalculateNormals();
-        leftForearmMesh.normals = normals;
-        leftForearmMesh.RecalculateNormals();
-        leftHandMesh.normals = normals;
-        leftHandMesh.RecalculateNormals();
-
-        // right foot:
-        MeshRenderer meshRenderer1 = right_feet.AddComponent<MeshRenderer>();
-        meshRenderer1.sharedMaterial = new Material(Shader.Find("Standard"));
-        MeshFilter meshFilter1 = right_feet.AddComponent<MeshFilter>();
-        meshFilter1.mesh = rightFeetMesh;
-
-        //left foot
-        MeshRenderer meshRenderer2 = left_feet.AddComponent<MeshRenderer>();
-        meshRenderer2.sharedMaterial = new Material(Shader.Find("Standard"));
-        MeshFilter meshFilter2 = left_feet.AddComponent<MeshFilter>();
-        meshFilter2.mesh = leftFeetMesh;
-
-        //right calve
-        MeshRenderer meshRenderer3 = right_calve.AddComponent<MeshRenderer>();
-        meshRenderer3.sharedMaterial = new Material(Shader.Find("Standard"));
-        MeshFilter meshFilter3 = right_calve.AddComponent<MeshFilter>();
-        meshFilter3.mesh = rightCalve;
-
-        //left calve
-        MeshRenderer meshRenderer4 = left_calve.AddComponent<MeshRenderer>();
-        meshRenderer4.sharedMaterial = new Material(Shader.Find("Standard"));
-        MeshFilter meshFilter4 = left_calve.AddComponent<MeshFilter>();
-        meshFilter4.mesh = leftCalve;
-
-        //right thigh
-        MeshRenderer meshRenderer5 = right_thigh.AddComponent<MeshRenderer>();
-        meshRenderer5.sharedMaterial = new Material(Shader.Find("Standard"));
-        MeshFilter meshFilter5 = right_thigh.AddComponent<MeshFilter>();
-        meshFilter5.mesh = rightThighMesh;
-
-        //left thigh
-        MeshRenderer meshRenderer6 = left_thigh.AddComponent<MeshRenderer>();
-        meshRenderer6.sharedMaterial = new Material(Shader.Find("Standard"));
-        MeshFilter meshFilter6 = left_thigh.AddComponent<MeshFilter>();
-        meshFilter6.mesh = leftThighMesh;
-
-        //hipMesh construction
-        MeshRenderer meshRenderer7 = hip.AddComponent<MeshRenderer>();
-        meshRenderer7.sharedMaterial = new Material(Shader.Find("Standard"));
-        MeshFilter meshFilter7 = hip.AddComponent<MeshFilter>();
-        meshFilter7.mesh = hipMesh;
-
-        //bodyMeshConstruction 
-        MeshRenderer meshRenderer8 = body.AddComponent<MeshRenderer>();
-        meshRenderer8.sharedMaterial = new Material(Shader.Find("Standard"));
-        MeshFilter meshFilter8 = body.AddComponent<MeshFilter>();
-        meshFilter8.mesh = bodyMesh;
-
-        //headMesh Construciton 
-        MeshRenderer meshRenderer9 = head.AddComponent<MeshRenderer>();
-        meshRenderer9.sharedMaterial = new Material(Shader.Find("Standard"));
-        MeshFilter meshFilter9 = head.AddComponent<MeshFilter>();
-        meshFilter9.mesh = headMesh;
-
-        //rightShoulderMesh Construciton 
-        MeshRenderer meshRenderer10 = right_shoulder.AddComponent<MeshRenderer>();
-        meshRenderer10.sharedMaterial = new Material(Shader.Find("Standard"));
-        MeshFilter meshFilter10 = right_shoulder.AddComponent<MeshFilter>();
-        meshFilter10.mesh = rightShoulderMesh;
-
-        //rightBicepMesh Construciton 
-        MeshRenderer meshRenderer11 = right_bicep.AddComponent<MeshRenderer>();
-        meshRenderer11.sharedMaterial = new Material(Shader.Find("Standard"));
-        MeshFilter meshFilter11 = right_bicep.AddComponent<MeshFilter>();
-        meshFilter11.mesh = rightBicepMesh;
-
-        //rightForearmMesh Construciton 
-        MeshRenderer meshRenderer12 = right_forearm.AddComponent<MeshRenderer>();
-        meshRenderer12.sharedMaterial = new Material(Shader.Find("Standard"));
-        MeshFilter meshFilter12 = right_forearm.AddComponent<MeshFilter>();
-        meshFilter12.mesh = rightForearmMesh;
-
-        //rightHandMesh Construciton 
-        MeshRenderer meshRenderer13 = right_hand.AddComponent<MeshRenderer>();
-        meshRenderer13.sharedMaterial = new Material(Shader.Find("Standard"));
-        MeshFilter meshFilter13 = right_hand.AddComponent<MeshFilter>();
-        meshFilter13.mesh = rightHandMesh;
-
-        //rightShoulderMesh Construciton 
-        MeshRenderer meshRenderer14 = left_shoulder.AddComponent<MeshRenderer>();
-        meshRenderer14.sharedMaterial = new Material(Shader.Find("Standard"));
-        MeshFilter meshFilter14 = left_shoulder.AddComponent<MeshFilter>();
-        meshFilter14.mesh = leftShoulderMesh;
-
-        //rightBicepMesh Construciton 
-        MeshRenderer meshRenderer15 = left_bicep.AddComponent<MeshRenderer>();
-        meshRenderer15.sharedMaterial = new Material(Shader.Find("Standard"));
-        MeshFilter meshFilter15 = left_bicep.AddComponent<MeshFilter>();
-        meshFilter15.mesh = leftBicepMesh;
-
-        //rightForearmMesh Construciton 
-        MeshRenderer meshRenderer16 = left_forearm.AddComponent<MeshRenderer>();
-        meshRenderer16.sharedMaterial = new Material(Shader.Find("Standard"));
-        MeshFilter meshFilter16 = left_forearm.AddComponent<MeshFilter>();
-        meshFilter16.mesh = leftForearmMesh;
-
-        //rightHandMesh Construciton 
-        MeshRenderer meshRenderer17 = left_hand.AddComponent<MeshRenderer>();
-        meshRenderer17.sharedMaterial = new Material(Shader.Find("Standard"));
-        MeshFilter meshFilter17 = left_hand.AddComponent<MeshFilter>();
-        meshFilter17.mesh = leftHandMesh;
-
-        //neckMesh Construction
-        MeshRenderer meshRenderer18 = neck.AddComponent<MeshRenderer>();
-        meshRenderer18.sharedMaterial = new Material(Shader.Find("Standard"));
-        MeshFilter meshFilter18 = neck.AddComponent<MeshFilter>();
-        meshFilter18.mesh = neckMesh;
+            bone.AddComponent<Block>();
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
 
+        //HIPS:
+        Matrix4x4 hipsS = Walker.ScaleM(1, 0.3f, 0.6f);
+        //Matrix4x4 hipsR = TransformationSergio.RotateM(rotationX, TransformationSergio.AXIS.AX_Y);
+        Matrix4x4 hipsM = hipsS;
+        Matrix4x4 hipsI = Matrix4x4.identity;
+        ApplyTransformations(hipsM, bones[(int)BONES.HIPS]);
+
+        //TORSO:
+        Matrix4x4 torsoT = Walker.TranslateM(0, 0.7f, 0);
+        Matrix4x4 torsoR = Walker.RotateM(rotationX/2.0f, Walker.AXIS.AX_Y);
+        Matrix4x4 torsoS = Walker.ScaleM(1.0f, 1.0f, 0.5f);
+        Matrix4x4 torsoI = hipsI * torsoT*torsoR;
+        Matrix4x4 torsoM = torsoI * torsoS;
+        //ApplyTransformations(torsoM, bones[(int)BONES.TORSO]);
+        ApplyTransformationsROTATION(torsoM, bones[(int)BONES.TORSO], rotationX);
+
+        //RIGHSHOULDER
+        Matrix4x4 shoulderTR = Walker.TranslateM(-0.65f, 0.30f, 0);
+        Matrix4x4 shoulderSR = Walker.ScaleM(0.4f, 0.4f, 0.4f);
+        Matrix4x4 shoulderIR = torsoI * shoulderTR;
+        Matrix4x4 shoulderMR = shoulderIR * shoulderSR;
+        ApplyTransformations(shoulderMR, bones[(int)BONES.SHOULDERRIGHT]);
+
+        //LEFTSHOULDE:
+        Matrix4x4 shoulderTL = Walker.TranslateM(0.65f, 0.30f, 0);
+        Matrix4x4 shoulderSL = Walker.ScaleM(0.4f, 0.4f, 0.4f);
+        Matrix4x4 shoulderIL = torsoI * shoulderTL;
+        Matrix4x4 shoulderML = shoulderIL * shoulderSL;
+        ApplyTransformations(shoulderML, bones[(int)BONES.SHOULDERLEFT]);
+
+        //RIGHTBICEP
+        Matrix4x4 bicepRR = Walker.RotateM(-rotationX, Walker.AXIS.AX_X);
+        Matrix4x4 bicepTR = Walker.TranslateM(0.0f, -0.40f, 0);
+        Matrix4x4 bicepSR = Walker.ScaleM(0.2f, 0.4f, 0.2f);
+        Matrix4x4 bicepIR = shoulderIR * bicepTR* bicepRR;
+        Matrix4x4 bicepMR = bicepIR * bicepSR;
+        ApplyTransformations(bicepMR, bones[(int)BONES.RIGHTBICEP]);
+
+        //LEFTBICEP
+        Matrix4x4 bicepLR = Walker.RotateM(rotationX, Walker.AXIS.AX_X);
+        Matrix4x4 bicepTL = Walker.TranslateM(0.0f, -0.40f, 0);
+        Matrix4x4 bicepSL = Walker.ScaleM(0.2f, 0.4f, 0.2f);
+        Matrix4x4 bicepIL = shoulderIL * bicepTL * bicepLR;
+        Matrix4x4 bicepML = bicepIL * bicepSL;
+        ApplyTransformations(bicepML, bones[(int)BONES.LEFTBICEP]);
+
+
+
+        //RIGHTFOREARM
+        Matrix4x4 forearmRR = Walker.RotateM(-rotationKnee, Walker.AXIS.AX_X);
+        Matrix4x4 forearmTR = Walker.TranslateM(0.0f, -0.40f, 0);
+        Matrix4x4 forearmSR = Walker.ScaleM(0.2f, 0.4f, 0.2f);
+        Matrix4x4 forearmIR = bicepIR * forearmTR * forearmRR;
+        Matrix4x4 forearmMR = forearmIR * forearmSR;
+        ApplyTransformations(forearmMR, bones[(int)BONES.RIGHTFOREARM]);
+
+        //LEFTFOREARM
+        Matrix4x4 forearmLR = Walker.RotateM(-rotationKnee, Walker.AXIS.AX_X);
+        Matrix4x4 forearmTL = Walker.TranslateM(0.0f, -0.40f, 0);
+        Matrix4x4 forearmSL = Walker.ScaleM(0.2f, 0.4f, 0.2f);
+        Matrix4x4 forearmIL = bicepIL * forearmTL * forearmLR;
+        Matrix4x4 forearmML = forearmIL * forearmSL;
+        ApplyTransformations(forearmML, bones[(int)BONES.LEFTFOREARM]);
+
+        //RIGHTHAND
+        Matrix4x4 handTR = Walker.TranslateM(0.0f, -0.30f, 0);
+        Matrix4x4 handSR = Walker.ScaleM(0.2f, 0.2f, 0.3f);
+        Matrix4x4 handIR = forearmIR * handTR;
+        Matrix4x4 handMR = handIR * handSR;
+        ApplyTransformations(handMR, bones[(int)BONES.RIGHTHAND]);
+
+        //LEFTHAND
+        Matrix4x4 handTL = Walker.TranslateM(0.0f, -0.30f, 0);
+        Matrix4x4 handSL = Walker.ScaleM(0.2f, 0.2f, 0.3f);
+        Matrix4x4 handIL = forearmIL * handTL;
+        Matrix4x4 handML = handIL * handSL;
+        ApplyTransformations(handML, bones[(int)BONES.LEFTHAND]);
+
+        //RIGHTHIGH:
+
+
+        /*
+        Vector4 temp1 = Transformations.Scale(input[i], 1f, 1f, 0.5f);
+        temp1.w = 1;
+        Vector4 temp2 = Transformations.Translate(temp1, -side, -side / 2, 0f);
+        Vector4 temp3 = Transformations.RotateX(temp2, rotX);
+        Vector4 temp4 = Transformations.Translate(temp3, 0, side * 2.5f, side / 4);
+
+        */ 
+
+        //Matrix4x4 thighTR = TransformationSergio.TranslateM(-0.25f, -0.4f, 0);
+        Matrix4x4 thighRR = Walker.RotateM(rotationX, Walker.AXIS.AX_X);
+        Matrix4x4 thighTR = Walker.TranslateM(-0.25f, -0.4f, 0);
+        Matrix4x4 thighSR = Walker.ScaleM(0.3f, 0.5f, 0.5f);
+        Matrix4x4 thighIR = hipsI * thighTR * thighRR;
+        Matrix4x4 thighMR = thighIR * thighSR;
+        ApplyTransformations(thighMR, bones[(int)BONES.RIGHTTHIGH]);
+
+        //LEFTTHIGH:
+        Matrix4x4 thighLR = Walker.RotateM(-rotationX, Walker.AXIS.AX_X);
+        Matrix4x4 thighTL = Walker.TranslateM(0.25f, -0.4f, 0);
+        Matrix4x4 thighSL = Walker.ScaleM(0.3f, 0.5f, 0.5f);
+        Matrix4x4 thighIL = hipsI * thighTL*thighLR;
+        Matrix4x4 thighML = thighIL * thighSL;
+        ApplyTransformations(thighML, bones[(int)BONES.LEFTTHIGH]);
+
+        //RIGHTCALVE:
+        
+        /*
+        if(dir < 0){
+            rotationKnee = rotationX;
+        }else{
+            rotationKnee = rotationX/5f;
+        }*/
+        Matrix4x4 calveRR = Walker.RotateM(rotationKnee, Walker.AXIS.AX_X);
+        Matrix4x4 calveTR = Walker.TranslateM(0.0f, -0.5f, 0);
+        Matrix4x4 calveSR = Walker.ScaleM(0.3f, 0.5f, 0.5f);
+        Matrix4x4 calveIR = thighIR * calveTR * calveRR;
+        Matrix4x4 calveMR = calveIR * calveSR;
+        ApplyTransformations(calveMR, bones[(int)BONES.RIGHTCALVE]);
+
+        //LEFTCALVE:
+        Matrix4x4 calveLR = Walker.RotateM(rotationKnee, Walker.AXIS.AX_X);
+        Matrix4x4 calveTL = Walker.TranslateM(0.0f, -0.5f, 0);
+        Matrix4x4 calveSL = Walker.ScaleM(0.3f, 0.5f, 0.5f);
+        Matrix4x4 calveIL = thighIL * calveTL * calveLR;
+        Matrix4x4 calveML = calveIL * calveSL;
+        ApplyTransformations(calveML, bones[(int)BONES.LEFTCALVE]);
+
+        //RIGHTFOOT:
+        Matrix4x4 footTR = Walker.TranslateM(0f, -0.35f, -0.1f);
+        Matrix4x4 footSR = Walker.ScaleM(0.3f, 0.2f, 0.65f);
+        Matrix4x4 footIR = calveIR * footTR;
+        Matrix4x4 footMR = footIR * footSR;
+        ApplyTransformations(footMR, bones[(int)BONES.RIGHTFOOT]);
+
+        //LEFTFOOT:
+        Matrix4x4 footTL = Walker.TranslateM(0.0f, -0.35f, -0.1f);
+        Matrix4x4 footSL = Walker.ScaleM(0.3f, 0.2f, 0.65f);
+        Matrix4x4 footIL = calveIL * footTL;
+        Matrix4x4 footML = footIL * footSL;
+        ApplyTransformations(footML, bones[(int)BONES.LEFTFOOT]);
+        
+
+        //NECK
+        Matrix4x4 neckT = Walker.TranslateM(0, 0.6f, 0);
+        Matrix4x4 neckR = Walker.RotateM(rotationX/2.0f, Walker.AXIS.AX_X);
+        Matrix4x4 neckS = Walker.ScaleM(0.3f, 0.3f, 0.3f);
+        Matrix4x4 neckI = torsoI * neckT * neckR;
+        Matrix4x4 neckM = neckI * neckS;
+        ApplyTransformations(neckM, bones[(int)BONES.NECK]);
+
+        //HEAD
+        Matrix4x4 headT = Walker.TranslateM(0, 0.3f, 0);
+        Matrix4x4 headS = Walker.ScaleM(0.5f, 0.5f, 0.5f);
+        Matrix4x4 headM = neckI * headT * headS;
+        ApplyTransformations(headM, bones[(int)BONES.HEAD]);
+
+
         rotationX += dir * delta;
         if (rotationX > maxAngle || rotationX < minAngle) dir = -dir;
 
-        rotationArm = rotationX / 3f;
+        rotationKnee += dirKnee * deltaKnee;
+        if (rotationKnee > maxAngleKnee || rotationKnee < minAngleKnee) dirKnee = -dirKnee;
 
-        rightThighMesh.vertices = Walker.DoTransformThighRight(vertices, rotationX, side);
-        leftThighMesh.vertices = Walker.DoTransformThighLeft(vertices, -rotationX, side);
-
-        rightBicepMesh.vertices = Walker.DoTransformBicepLeft(vertices, rotationArm, side);
-        leftBicepMesh.vertices = Walker.DoTransformBicepRight(vertices, rotationArm, side);
-
-        leftForearmMesh.vertices = Walker.DoTransformForearmLeft(vertices, -rotationX/3f, side);
-        rightForearmMesh.vertices = Walker.DoTransformForearmRight(vertices, -rotationX/3f, side);
-
-        leftHandMesh.vertices = Walker.DoTransformHandLeft(vertices, -rotationX/3f, side);
-        rightHandMesh.vertices = Walker.DoTransformHandRight(vertices, -rotationX/3f, side);
-
-        rotationTorax = rotationX / 6f;
-        bodyMesh.vertices = Walker.DoTransformTorax(vertices, rotationTorax, side);
-        rightShoulderMesh.vertices = Walker.ShoulderRight(vertices, rotationTorax, side);
-        leftShoulderMesh.vertices = Walker.ShoulderLeft(vertices, rotationTorax, side);
-
-        //rightCalve.vertices = Walker.DoTransformKnee(vertices, -rotationX);
-
+        /*
         if (dir < 0)
         {
-            rightCalve.vertices = Walker.DoTransformCalveRightFront(vertices, rotationX, side);
+            calveMR.vertices = Walker.DoTransformCalveRightFront(vertices, rotationX, side);
             rightFeetMesh.vertices = Walker.DoTransformFootRightFront(vertices, rotationX, side);
 
             if (rotationX > -25.0f)
@@ -510,8 +305,6 @@ public class Robot : MonoBehaviour
             }
             rightCalve.vertices = Walker.DoTransformCalveRightBack(vertices, rotationX, side, rotationKnee);
             rightFeetMesh.vertices = Walker.DoTransformFootRightBack(vertices, rotationX, side, rotationKnee);
-        }
-
-
+        }*/
     }
 }
