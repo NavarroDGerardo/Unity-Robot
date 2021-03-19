@@ -116,7 +116,7 @@ public class Robot : MonoBehaviour
         ApplyTransformations(hipsM, bones[(int)BONES.HIPS]);
 
         //TORSO:
-        Matrix4x4 torsoT = Walker.TranslateM(0, 0.7f, 0);
+        Matrix4x4 torsoT = Walker.TranslateM(0, 0.65f, 0);
         Matrix4x4 torsoR = Walker.RotateM(rotationX/2.0f, Walker.AXIS.AX_Y);
         Matrix4x4 torsoS = Walker.ScaleM(1.0f, 1.0f, 0.5f);
         Matrix4x4 torsoI = hipsI * torsoT*torsoR;
@@ -153,8 +153,6 @@ public class Robot : MonoBehaviour
         Matrix4x4 bicepIL = shoulderIL * bicepTL * bicepLR;
         Matrix4x4 bicepML = bicepIL * bicepSL;
         ApplyTransformations(bicepML, bones[(int)BONES.LEFTBICEP]);
-
-
 
         //RIGHTFOREARM
         Matrix4x4 forearmRR = Walker.RotateM(-rotationKnee, Walker.AXIS.AX_X);
@@ -196,21 +194,23 @@ public class Robot : MonoBehaviour
         Vector4 temp3 = Transformations.RotateX(temp2, rotX);
         Vector4 temp4 = Transformations.Translate(temp3, 0, side * 2.5f, side / 4);
 
-        */ 
+        */
 
         //Matrix4x4 thighTR = TransformationSergio.TranslateM(-0.25f, -0.4f, 0);
+        Matrix4x4 thighTP = Walker.TranslateM(0, -0.2f, 0);
         Matrix4x4 thighRR = Walker.RotateM(rotationX, Walker.AXIS.AX_X);
-        Matrix4x4 thighTR = Walker.TranslateM(-0.25f, -0.4f, 0);
+        Matrix4x4 thighTR = Walker.TranslateM(-0.25f, -0.2f, 0);
         Matrix4x4 thighSR = Walker.ScaleM(0.3f, 0.5f, 0.5f);
-        Matrix4x4 thighIR = hipsI * thighTR * thighRR;
+        Matrix4x4 thighIR = hipsI * thighTR * thighRR * thighTP;
         Matrix4x4 thighMR = thighIR * thighSR;
         ApplyTransformations(thighMR, bones[(int)BONES.RIGHTTHIGH]);
 
         //LEFTTHIGH:
+        Matrix4x4 thighLP = Walker.TranslateM(0, -0.2f, 0);
         Matrix4x4 thighLR = Walker.RotateM(-rotationX, Walker.AXIS.AX_X);
-        Matrix4x4 thighTL = Walker.TranslateM(0.25f, -0.4f, 0);
+        Matrix4x4 thighTL = Walker.TranslateM(0.25f, -0.2f, 0);
         Matrix4x4 thighSL = Walker.ScaleM(0.3f, 0.5f, 0.5f);
-        Matrix4x4 thighIL = hipsI * thighTL*thighLR;
+        Matrix4x4 thighIL = hipsI * thighTL*thighLR * thighLP;
         Matrix4x4 thighML = thighIL * thighSL;
         ApplyTransformations(thighML, bones[(int)BONES.LEFTTHIGH]);
 
